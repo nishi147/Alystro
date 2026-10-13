@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const teacherController_js_1 = require("../controllers/teacherController.js");
+const auth_js_1 = require("../middleware/auth.js");
+const tenant_js_1 = require("../middleware/tenant.js");
+const router = (0, express_1.Router)();
+router.get('/', auth_js_1.authenticate, tenant_js_1.enforceTenantIsolation, teacherController_js_1.getTeachers);
+router.post('/', auth_js_1.authenticate, (0, auth_js_1.authorizeRoles)('SUPER_ADMIN', 'ADMIN', 'SCHOOL_ADMIN'), teacherController_js_1.createTeacher);
+exports.default = router;

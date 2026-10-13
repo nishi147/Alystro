@@ -1,0 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const batchController_js_1 = require("../controllers/batchController.js");
+const auth_js_1 = require("../middleware/auth.js");
+const tenant_js_1 = require("../middleware/tenant.js");
+const router = (0, express_1.Router)();
+router.get('/', auth_js_1.authenticate, tenant_js_1.enforceTenantIsolation, batchController_js_1.getBatches);
+router.post('/', auth_js_1.authenticate, (0, auth_js_1.authorizeRoles)('SUPER_ADMIN', 'ADMIN', 'SCHOOL_ADMIN'), batchController_js_1.createBatch);
+router.put('/:id', auth_js_1.authenticate, (0, auth_js_1.authorizeRoles)('SUPER_ADMIN', 'ADMIN', 'SCHOOL_ADMIN', 'TEACHER'), batchController_js_1.updateBatch);
+exports.default = router;
