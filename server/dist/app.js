@@ -18,9 +18,26 @@ exports.app = (0, express_1.default)();
 exports.app.use((0, helmet_1.default)({
     crossOriginResourcePolicy: { policy: 'cross-origin' },
 }));
-// CORS configuration
+// CORS configuration — supports multiple origins via comma-separated CLIENT_URL env var
+const allowedOrigins = (index_js_1.config.clientUrl || '')
+    .split(',')
+    .map((o) => o.trim())
+    .filter(Boolean)
+    .concat(['http://localhost:5173', 'http://localhost:5174', 'http://127.0.0.1:5173']);
 exports.app.use((0, cors_1.default)({
-    origin: [index_js_1.config.clientUrl, 'http://localhost:5173', 'http://127.0.0.1:5173'],
+    origin: (origin, callback) => {
+        // Allow requests with no origin (mobile apps, curl, Postman, etc.)
+        if (!origin)
+            return callback(null, true);
+        if (allowedOrigins.includes(origin)) {
+            return callback(null, true);
+        }
+        // In production allow *.vercel.app subdomains
+        if (origin.endsWith('.vercel.app')) {
+            return callback(null, true);
+        }
+        return callback(new Error(`CORS: Origin ${origin} not allowed`), false);
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
