@@ -1,4 +1,6 @@
-const API_BASE = '/api/v1';
+// In dev: '/api/v1' is proxied by Vite to localhost:5000
+// In prod: VITE_API_URL must be set to your deployed backend URL e.g. https://alystro-api.vercel.app
+const API_BASE = import.meta.env.VITE_API_URL || '/api/v1';
 
 export class ApiError extends Error {
   statusCode: number;
