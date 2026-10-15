@@ -74,7 +74,7 @@ export const SchoolMicrositePage: React.FC = () => {
         <div className="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-soft mb-10">
           <div className="relative h-48 sm:h-64 bg-navy-950 overflow-hidden">
             <img
-              src={school.coverImage || 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?auto=format&fit=crop&q=80&w=1200'}
+              src={school.coverImage || '/images/indian_school_campus.jpg'}
               alt={school.name}
               className="w-full h-full object-cover opacity-60"
             />

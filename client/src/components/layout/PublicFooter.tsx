@@ -15,37 +15,39 @@ export const PublicFooter: React.FC = () => {
               </div>
               <span className="text-2xl font-extrabold text-white font-display">ALYSTRO</span>
             </Link>
+            <p className="text-xs font-semibold text-brand-400 tracking-wider uppercase">
+              AI • CODING • VIDEO EDITING • FREELANCING
+            </p>
             <p className="text-sm text-slate-400 max-w-sm leading-relaxed">
-              Empowering students of Classes 6–12 with future-ready skills in Artificial Intelligence,
-              Video Editing, Creative Content, and Digital Technologies in partnership with leading schools.
+              "Helping Students Learn Today, Create Tomorrow & Grow with Confidence." A practical 3-month Future Skills Program designed for students of Classes 6 to 12.
             </p>
             <div className="flex items-center gap-3 text-xs text-slate-400 pt-2">
               <span className="flex items-center gap-1.5 bg-navy-900 px-3 py-1.5 rounded-lg border border-navy-800">
-                <ShieldCheck className="w-4 h-4 text-emerald-400" /> ISO Compliant Pedagogy
+                <ShieldCheck className="w-4 h-4 text-emerald-400" /> 100% Live Online via App
               </span>
               <span className="flex items-center gap-1.5 bg-navy-900 px-3 py-1.5 rounded-lg border border-navy-800">
-                <Award className="w-4 h-4 text-brand-400" /> Verifiable Certs
+                <Award className="w-4 h-4 text-brand-400" /> Verifiable Certificate
               </span>
             </div>
           </div>
 
           {/* Programs Column */}
           <div>
-            <h4 className="text-sm font-bold uppercase tracking-wider text-white mb-4">Programs</h4>
+            <h4 className="text-sm font-bold uppercase tracking-wider text-white mb-4">Our Programs</h4>
             <ul className="space-y-2.5 text-sm">
               <li>
-                <Link to="/programs#class-6-8" className="hover:text-white transition">
-                  Class 6–8: Foundation Program
+                <Link to="/programs" className="hover:text-white transition">
+                  Classes 6–7 | Foundation Level
                 </Link>
               </li>
               <li>
-                <Link to="/programs#class-9-10" className="hover:text-white transition">
-                  Class 9–10: Skill Builder Program
+                <Link to="/programs" className="hover:text-white transition">
+                  Classes 8–10 | Skill Development
                 </Link>
               </li>
               <li>
-                <Link to="/programs#class-11-12" className="hover:text-white transition">
-                  Class 11–12: Future Ready Program
+                <Link to="/programs" className="hover:text-white transition">
+                  Classes 11–12 | Advanced & Career
                 </Link>
               </li>
               <li>
@@ -58,11 +60,16 @@ export const PublicFooter: React.FC = () => {
 
           {/* For Schools & Resources */}
           <div>
-            <h4 className="text-sm font-bold uppercase tracking-wider text-white mb-4">Quick Links</h4>
+            <h4 className="text-sm font-bold uppercase tracking-wider text-white mb-4">School Partnership</h4>
             <ul className="space-y-2.5 text-sm">
               <li>
                 <Link to="/for-schools" className="hover:text-white transition">
-                  For Schools & Principals
+                  300-Student Milestone
+                </Link>
+              </li>
+              <li>
+                <Link to="/for-schools" className="hover:text-white transition">
+                  ₹2,00,000 Tech Package
                 </Link>
               </li>
               <li>
@@ -77,12 +84,7 @@ export const PublicFooter: React.FC = () => {
               </li>
               <li>
                 <Link to="/about" className="hover:text-white transition">
-                  About Our Pedagogy
-                </Link>
-              </li>
-              <li>
-                <Link to="/schools/abc-international" className="hover:text-white transition">
-                  Demo Partner Microsite
+                  About ALYSTRO & Vision
                 </Link>
               </li>
             </ul>
@@ -92,9 +94,12 @@ export const PublicFooter: React.FC = () => {
           <div>
             <h4 className="text-sm font-bold uppercase tracking-wider text-white mb-4">Contact ALYSTRO</h4>
             <ul className="space-y-3 text-sm text-slate-400">
+              <li className="text-xs text-brand-300 font-semibold">
+                Founder & CEO: Yash Singhal
+              </li>
               <li className="flex items-start gap-2.5">
                 <MapPin className="w-4 h-4 text-brand-400 mt-0.5 shrink-0" />
-                <span>ALYSTRO SOFTWARE, Jaipur, Rajasthan, India</span>
+                <span>Pratap Nagar, Sector 10, Jaipur, Rajasthan</span>
               </li>
               <li className="flex items-center gap-2.5">
                 <Phone className="w-4 h-4 text-brand-400 shrink-0" />
@@ -114,7 +119,10 @@ export const PublicFooter: React.FC = () => {
 
         {/* Bottom Bar */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
-          <p>© {new Date().getFullYear()} ALYSTRO Technologies Pvt Ltd. All rights reserved.</p>
+          <div>
+            <p className="font-semibold text-slate-400">"LET'S PREPARE TODAY'S STUDENTS FOR TOMORROW'S WORLD."</p>
+            <p className="text-slate-500 mt-0.5">© {new Date().getFullYear()} ALYSTRO — LEARN • CREATE • GROW. All rights reserved.</p>
+          </div>
           <div className="flex items-center gap-6">
             <Link to="/terms" className="hover:text-slate-400 transition">Terms of Service</Link>
             <Link to="/privacy" className="hover:text-slate-400 transition">Privacy Policy</Link>

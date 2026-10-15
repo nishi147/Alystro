@@ -27,18 +27,216 @@ export const ProgramDetailPage: React.FC = () => {
   const [demoModalOpen, setDemoModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
+  const fallbackPrograms: Record<string, Program> = {
+    'classes-6-7': {
+      id: 'classes-6-7',
+      name: 'Foundation Level',
+      slug: 'classes-6-7',
+      gradeLevel: 'Classes 6–7',
+      tagline: 'Build curiosity, creativity and strong digital basics from an early age.',
+      description: 'A 3-month practical foundation introducing young students to how AI tools work, coding fundamentals through fun interactive activities, creative video editing, digital safety, and introductory freelancing concepts.',
+      durationMonths: 3,
+      sessionDurationMinutes: 45,
+      mode: '100% Online via ALYSTRO App',
+      schedule: 'Monday to Friday (Saturday & Sunday Off)',
+      status: 'PUBLISHED',
+      features: [
+        'What is AI and how AI tools work',
+        'Basic & safe use of AI tools',
+        'Coding fundamentals through fun activities',
+        'Basic video editing & creative content making',
+        'Digital safety and responsible internet use',
+        'Small practical projects & intro to freelancing',
+      ],
+      learningOutcomes: [
+        'Understand what AI is and how everyday AI tools work safely',
+        'Develop computational thinking and basic logic using creative coding activities',
+        'Create simple video reels and creative content with transitions and music',
+        'Browse the internet responsibly with strong digital safety habits',
+        'Build and showcase first mini-projects with classmates',
+      ],
+      syllabus: [
+        {
+          month: 1,
+          title: 'Curiosity & Digital Fundamentals',
+          description: 'Introduction to technology, safe digital habits, and fun visual coding concepts.',
+          topics: [
+            'Welcome to ALYSTRO: The Digital World & What is AI?',
+            'Safe Internet Use & Digital Citizenship',
+            'Logical Thinking & Fun Block Coding Games',
+            'Exploring Generative AI Tools safely for school projects',
+          ],
+        },
+        {
+          month: 2,
+          title: 'Creative Content & Basic Video Editing',
+          description: 'Hands-on storytelling, video cutting, transitions, and audio balancing.',
+          topics: [
+            'Storyboarding & Creative Content Planning',
+            'Basic Video Cutting, Trimming & Splitting on Mobile/PC',
+            'Adding Music, Sound Effects & Subtitles',
+            'Making an Educational Explainer Video',
+          ],
+        },
+        {
+          month: 3,
+          title: 'Mini Projects, Digital Showcase & Freelancing Intro',
+          description: 'Applying skills to create real mini-projects and understand future opportunities.',
+          topics: [
+            'Building a Simple Interactive Quiz/Game',
+            'Introduction to Digital Work & What Freelancing Means',
+            'Final Practical Project Preparation',
+            'Student Showcase, Certificate Award & Parent Progress Report',
+          ],
+        },
+      ],
+    },
+    'classes-8-10': {
+      id: 'classes-8-10',
+      name: 'Skill Development Level',
+      slug: 'classes-8-10',
+      gradeLevel: 'Classes 8–10',
+      tagline: 'Turn technology into practical skills and creative opportunities.',
+      description: 'Designed for middle to high school students to master smart AI prompting, hands-on coding with real logic, professional video editing techniques, digital research, and freelancing portfolio basics.',
+      durationMonths: 3,
+      sessionDurationMinutes: 45,
+      mode: '100% Online via ALYSTRO App',
+      schedule: 'Monday to Friday (Saturday & Sunday Off)',
+      status: 'PUBLISHED',
+      features: [
+        'AI tools and smart prompting techniques',
+        'Practical coding and small projects',
+        'Video editing and content creation',
+        'Research & productivity using digital tools',
+        'Freelancing basics & portfolio concepts',
+        'Weekly practical assignments',
+      ],
+      learningOutcomes: [
+        'Write advanced, structured AI prompts for study, research, and ideation',
+        'Build working code scripts and real mini web or game applications',
+        'Edit engaging reels, YouTube-style explainers, and dynamic videos',
+        'Assemble a digital project showcase portfolio',
+        'Understand client work, freelance platforms, and online ethical opportunities',
+      ],
+      syllabus: [
+        {
+          month: 1,
+          title: 'Smart AI Prompting & Digital Productivity',
+          description: 'Supercharging research, writing, and problem-solving with AI.',
+          topics: [
+            'Advanced AI Models & Multi-modal Intelligence',
+            'Smart Prompt Engineering: Few-shot, persona & chain-of-thought',
+            'AI-driven Research, Fact-checking & Productivity Workflows',
+            'AI Graphics & Visual Asset Creation',
+          ],
+        },
+        {
+          month: 2,
+          title: 'Practical Coding & Web Logic',
+          description: 'Building interactive projects from scratch.',
+          topics: [
+            'Modern Coding Architecture & Programming Logic',
+            'Building Responsive Web Interfaces & Interactive Components',
+            'Algorithmic Thinking & Mini App Development',
+            'Publishing and Hosting Your First Live Project',
+          ],
+        },
+        {
+          month: 3,
+          title: 'Video Creation, Freelancing & Portfolio Building',
+          description: 'Creating high-production content and establishing digital presence.',
+          topics: [
+            'Dynamic Video Editing: Keyframes, B-roll & Audio Mixing',
+            'Freelancing Platforms, Freelancer Mindset & In-demand Gigs',
+            'Creating Your First Digital Client Portfolio Deck',
+            'Graduation Project Presentation & Certification',
+          ],
+        },
+      ],
+    },
+    'classes-11-12': {
+      id: 'classes-11-12',
+      name: 'Advanced & Career Ready',
+      slug: 'classes-11-12',
+      gradeLevel: 'Classes 11–12',
+      tagline: 'Prepare for higher studies, digital careers, freelancing and future opportunities.',
+      description: 'A comprehensive pre-college accelerator equipping senior students with advanced AI workflows, real-world fullstack/Python project development, commercial video production, and actionable freelancing with client communication.',
+      durationMonths: 3,
+      sessionDurationMinutes: 45,
+      mode: '100% Online via ALYSTRO App',
+      schedule: 'Monday to Friday (Saturday & Sunday Off)',
+      status: 'PUBLISHED',
+      features: [
+        'Advanced AI tools and productivity techniques',
+        'Coding with real-world projects',
+        'Professional video editing & content creation',
+        'Portfolio building for digital careers',
+        'Freelancing, client communication & project management',
+        'Career-focused digital skills',
+      ],
+      learningOutcomes: [
+        'Deploy enterprise-grade AI tools and automated workflow solutions',
+        'Architect and ship production-ready coding projects with modern stacks',
+        'Produce cinematic, commercial-grade video edits with advanced color & audio',
+        'Establish an active freelance profile with pitch decks and proposals',
+        'Acquire high-demand digital skills for university and early freelance earnings',
+      ],
+      syllabus: [
+        {
+          month: 1,
+          title: 'Advanced AI Architecture & Career Productivity',
+          description: 'Leveraging AI for high-velocity creation and career readiness.',
+          topics: [
+            'State-of-the-Art Generative AI & Automation Stacks',
+            'Prompt Engineering for Software, Research & Content Pipelines',
+            'AI Workflow Automation & Integration Tools',
+            'Intellectual Property, Ethics & Professional Digital Standards',
+          ],
+        },
+        {
+          month: 2,
+          title: 'Fullstack Project Coding & Systems',
+          description: 'Building and deploying end-to-end applications.',
+          topics: [
+            'Fullstack Web Architecture & Real-world Project Structure',
+            'Working with APIs, Data Pipelines & Cloud Deployment',
+            'Version Control (Git/GitHub) & Collaborative Development',
+            'Deploying Live Web Projects to Global CDN',
+          ],
+        },
+        {
+          month: 3,
+          title: 'Commercial Video, Client Management & Freelancing Launch',
+          description: 'Winning clients, delivering projects, and commercial content editing.',
+          topics: [
+            'Commercial Video Editing: Color grading, pacing & motion graphics',
+            'Client Acquisition, Proposal Writing & Pricing Strategies',
+            'Project Management, Delivery Standards & Client Feedback Loops',
+            'Capstone Presentation, Certificate of Completion & Career Guidance',
+          ],
+        },
+      ],
+    },
+  };
+
   useEffect(() => {
     async function loadProgram() {
       try {
         const res = await api.get(`/programs/${slug}`);
         if (res.success && res.data) {
           setProgram(res.data);
+          setIsLoading(false);
+          return;
         }
       } catch (e) {
         console.error(e);
-      } finally {
-        setIsLoading(false);
       }
+
+      // Check fallback data
+      if (slug && fallbackPrograms[slug]) {
+        setProgram(fallbackPrograms[slug]);
+      }
+      setIsLoading(false);
     }
     loadProgram();
   }, [slug]);
@@ -112,7 +310,13 @@ export const ProgramDetailPage: React.FC = () => {
             <div className="lg:col-span-5">
               <div className="rounded-2xl overflow-hidden border border-slate-200 shadow-md">
                 <img
-                  src="https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&q=80&w=800"
+                  src={
+                    slug === 'classes-6-7'
+                      ? '/images/indian_students_learning.jpg'
+                      : slug === 'classes-11-12'
+                      ? '/images/indian_tech_trainer.jpg'
+                      : '/images/indian_classroom_workshop.jpg'
+                  }
                   alt={program.name}
                   className="w-full h-72 object-cover"
                 />

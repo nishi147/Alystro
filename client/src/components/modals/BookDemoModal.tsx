@@ -160,9 +160,9 @@ export const BookDemoModal: React.FC<BookDemoModalProps> = ({ isOpen, onClose })
                 value={formData.classes}
                 onChange={(e) => setFormData({ ...formData, classes: e.target.value })}
                 options={[
-                  { value: 'Class 6-8', label: 'Class 6–8 (Foundation Program)' },
-                  { value: 'Class 9-10', label: 'Class 9–10 (Skill Builder)' },
-                  { value: 'Class 11-12', label: 'Class 11–12 (Future Ready)' },
+                  { value: 'Classes 6-7', label: 'Classes 6–7 | Foundation Level' },
+                  { value: 'Classes 8-10', label: 'Classes 8–10 | Skill Development Level' },
+                  { value: 'Classes 11-12', label: 'Classes 11–12 | Advanced & Career Ready' },
                   { value: 'All Classes (6-12)', label: 'All Classes (Class 6–12)' },
                 ]}
               />

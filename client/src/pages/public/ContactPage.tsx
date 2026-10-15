@@ -66,11 +66,20 @@ export const ContactPage: React.FC = () => {
               <ul className="space-y-4 text-xs sm:text-sm text-slate-600 mb-8">
                 <li className="flex items-start gap-3">
                   <div className="w-8 h-8 rounded-lg bg-brand-50 text-brand-600 flex items-center justify-center shrink-0">
+                    <User className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <strong className="block text-slate-900 font-semibold">Leadership:</strong>
+                    YASH SINGHAL, Founder & CEO
+                  </div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-brand-50 text-brand-600 flex items-center justify-center shrink-0">
                     <MapPin className="w-4 h-4" />
                   </div>
                   <div>
                     <strong className="block text-slate-900 font-semibold">Head Office:</strong>
-                    ALYSTRO SOFTWARE, Jaipur, Rajasthan, India
+                    Pratap Nagar, Sector 10, Jaipur, Rajasthan, India
                   </div>
                 </li>
                 <li className="flex items-center gap-3">
@@ -116,9 +125,9 @@ export const ContactPage: React.FC = () => {
                     <MapPin className="w-5 h-5" />
                   </div>
                   <span className="text-xs font-bold text-slate-800 mt-2 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full shadow-sm">
-                    Jaipur Campus Hub
+                    Pratap Nagar, Sector 10
                   </span>
-                  <span className="text-[10px] text-slate-500">Rajasthan, India</span>
+                  <span className="text-[10px] text-slate-500 font-medium">Jaipur, Rajasthan</span>
                 </div>
               </div>
             </div>
@@ -127,11 +136,11 @@ export const ContactPage: React.FC = () => {
           {/* Right Column: Book a Free Demo Form (Screen 8) */}
           <div className="lg:col-span-7">
             <div className="bg-white rounded-3xl border border-slate-200 p-8 sm:p-10 shadow-soft">
-              <h2 className="text-2xl font-extrabold text-navy-950 font-display mb-1">
-                Book a Free Demo
+              <h2 className="text-2xl font-extrabold text-navy-950 font-display mb-1 flex items-center gap-2">
+                <span>🎁 Book 3-Day Free Demo Program</span>
               </h2>
               <p className="text-xs text-slate-500 mb-6">
-                Fill this form to request a 3-day complimentary demo for your school students.
+                Experience the ALYSTRO learning system before enrollment — at absolutely no cost. All interested students are invited to attend.
               </p>
 
               {isSuccess ? (
@@ -218,9 +227,9 @@ export const ContactPage: React.FC = () => {
                       value={formData.classes}
                       onChange={(e) => setFormData({ ...formData, classes: e.target.value })}
                       options={[
-                        { value: 'Class 6-8', label: 'Class 6–8 (Foundation)' },
-                        { value: 'Class 9-10', label: 'Class 9–10 (Skill Builder)' },
-                        { value: 'Class 11-12', label: 'Class 11–12 (Future Ready)' },
+                        { value: 'Classes 6-7', label: 'Classes 6–7 | Foundation Level' },
+                        { value: 'Classes 8-10', label: 'Classes 8–10 | Skill Development Level' },
+                        { value: 'Classes 11-12', label: 'Classes 11–12 | Advanced & Career Ready' },
                         { value: 'All Classes', label: 'All Classes 6–12' },
                       ]}
                     />
@@ -248,13 +257,24 @@ export const ContactPage: React.FC = () => {
 
                   <div className="pt-2">
                     <Button type="submit" variant="primary" className="w-full py-3 font-bold" isLoading={isLoading}>
-                      Submit Request
+                      Book Free 3-Day Demo
                     </Button>
                   </div>
                 </form>
               )}
             </div>
           </div>
+        </div>
+
+        {/* Brochure Quote Banner */}
+        <div className="bg-navy-950 text-white rounded-3xl p-8 text-center border border-navy-800">
+          <p className="text-brand-400 text-xs font-bold uppercase tracking-wider mb-2">Our Core Commitment</p>
+          <h3 className="text-xl sm:text-2xl font-bold font-display text-white max-w-2xl mx-auto mb-2">
+            "LET'S PREPARE TODAY'S STUDENTS FOR TOMORROW'S WORLD."
+          </h3>
+          <p className="text-xs text-slate-400">
+            ALYSTRO — LEARN • CREATE • GROW | AI • CODING • VIDEO EDITING • FREELANCING
+          </p>
         </div>
       </div>
     </div>
