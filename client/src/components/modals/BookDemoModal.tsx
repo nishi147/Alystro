@@ -54,7 +54,7 @@ export const BookDemoModal: React.FC<BookDemoModalProps> = ({ isOpen, onClose })
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={handleResetAndClose} maxWidth="xl">
+    <Modal isOpen={isOpen} onClose={handleResetAndClose} maxWidth="xl" isSubmitting={isLoading}>
       {isSuccess ? (
         <div className="text-center py-6 px-4">
           <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -180,7 +180,10 @@ export const BookDemoModal: React.FC<BookDemoModalProps> = ({ isOpen, onClose })
                 Confirm & Request Free Demo
               </Button>
               <p className="text-[11px] text-slate-400 text-center mt-2">
-                🔒 We respect your school privacy. No spam. You will be assigned a personal academic coordinator.
+                🔒 We respect your school privacy. Need immediate assistance? Write to us at{' '}
+                <a href="mailto:Alystro64@gmail.com" className="text-brand-600 font-semibold hover:underline">
+                  Alystro64@gmail.com
+                </a>
               </p>
             </div>
           </form>

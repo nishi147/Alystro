@@ -109,8 +109,8 @@ export const PublicFooter: React.FC = () => {
               </li>
               <li className="flex items-center gap-2.5">
                 <Mail className="w-4 h-4 text-brand-400 shrink-0" />
-                <a href="mailto:info@alystro.com" className="hover:text-white transition">
-                  info@alystro.com
+                <a href="mailto:Alystro64@gmail.com" className="hover:text-white transition">
+                  Alystro64@gmail.com
                 </a>
               </li>
             </ul>

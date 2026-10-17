@@ -99,8 +99,8 @@ export const ContactPage: React.FC = () => {
                   </div>
                   <div>
                     <strong className="block text-slate-900 font-semibold">Email:</strong>
-                    <a href="mailto:info@alystro.com" className="hover:text-brand-600 transition">
-                      info@alystro.com
+                    <a href="mailto:Alystro64@gmail.com" className="hover:text-brand-600 transition">
+                      Alystro64@gmail.com
                     </a>
                   </div>
                 </li>

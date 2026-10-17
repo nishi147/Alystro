@@ -14,6 +14,8 @@ export const SuperAdminSchoolsPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formError, setFormError] = useState('');
+  const [formSuccess, setFormSuccess] = useState('');
 
   const [formData, setFormData] = useState({
     name: '',
@@ -45,26 +47,79 @@ export const SuperAdminSchoolsPage: React.FC = () => {
     loadSchools();
   }, [search]);
 
+  const handleOpenModal = () => {
+    setFormError('');
+    setFormSuccess('');
+    setModalOpen(true);
+  };
+
   const handleCreateSchool = async (e: React.FormEvent) => {
     e.preventDefault();
+    setFormError('');
+    setFormSuccess('');
+
+    // Pre-flight validation
+    if (!formData.name.trim()) {
+      setFormError('School name is required.');
+      return;
+    }
+    if (!formData.city.trim() || !formData.state.trim()) {
+      setFormError('City and State are required.');
+      return;
+    }
+    if (!formData.contactPersonName.trim() || !formData.contactPersonPhone.trim()) {
+      setFormError('Contact person name and phone are required.');
+      return;
+    }
+
+    const effectiveAdminEmail = (formData.adminEmail || formData.contactPersonEmail || '').trim();
+    if (!effectiveAdminEmail) {
+      setFormError('Please provide an admin email address.');
+      return;
+    }
+
     setIsSubmitting(true);
     try {
-      await api.post('/schools', {
-        name: formData.name,
-        address: { city: formData.city, state: formData.state, country: 'India' },
-        contactPerson: {
-          name: formData.contactPersonName,
-          phone: formData.contactPersonPhone,
-          email: formData.contactPersonEmail,
+      const res = await api.post('/schools', {
+        name: formData.name.trim(),
+        address: {
+          city: formData.city.trim(),
+          state: formData.state.trim(),
+          country: 'India',
         },
-        adminEmail: formData.adminEmail || formData.contactPersonEmail,
-        adminPassword: formData.adminPassword,
-        studentCapacity: formData.studentCapacity,
+        contactPerson: {
+          name: formData.contactPersonName.trim(),
+          phone: formData.contactPersonPhone.trim(),
+          email: (formData.contactPersonEmail || effectiveAdminEmail).trim(),
+        },
+        adminEmail: effectiveAdminEmail,
+        adminPassword: formData.adminPassword.trim() || 'School@123',
+        studentCapacity: Number(formData.studentCapacity) || 500,
       });
-      setModalOpen(false);
-      loadSchools();
+
+      if (res.success) {
+        setFormSuccess(`School "${formData.name}" provisioned successfully!`);
+        setTimeout(() => {
+          setModalOpen(false);
+          setFormSuccess('');
+          setFormData({
+            name: '',
+            city: 'Jaipur',
+            state: 'Rajasthan',
+            contactPersonName: '',
+            contactPersonPhone: '',
+            contactPersonEmail: '',
+            adminEmail: '',
+            adminPassword: 'School@123',
+            studentCapacity: 500,
+          });
+          loadSchools();
+        }, 1200);
+      } else {
+        setFormError(res.message || 'Failed to create school.');
+      }
     } catch (err: any) {
-      alert(err.message || 'Error creating school');
+      setFormError(err.message || 'Error creating school. Please verify inputs.');
     } finally {
       setIsSubmitting(false);
     }
@@ -77,7 +132,7 @@ export const SuperAdminSchoolsPage: React.FC = () => {
           <h2 className="text-2xl font-extrabold text-navy-950 font-display">School Tenants Directory</h2>
           <p className="text-xs text-slate-500">Manage all partnered institutions and isolated multi-tenant workspaces.</p>
         </div>
-        <Button variant="primary" size="sm" onClick={() => setModalOpen(true)} leftIcon={<Plus className="w-4 h-4" />}>
+        <Button variant="primary" size="sm" onClick={handleOpenModal} leftIcon={<Plus className="w-4 h-4" />}>
           Add New Partner School
         </Button>
       </div>
@@ -160,55 +215,108 @@ export const SuperAdminSchoolsPage: React.FC = () => {
       </div>
 
       {/* Modal: Create School */}
-      <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title="Create New Partner School Tenant" maxWidth="xl">
+      <Modal
+        isOpen={modalOpen}
+        onClose={() => {
+          if (!isSubmitting) setModalOpen(false);
+        }}
+        title="Create New Partner School Tenant"
+        subtitle="Provision an isolated multi-tenant academic database and administrator credentials"
+        maxWidth="xl"
+        isSubmitting={isSubmitting}
+      >
         <form onSubmit={handleCreateSchool} className="space-y-4">
-          <Input
-            label="School Name"
-            required
-            placeholder="e.g. Cambridge Modern School"
-            value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          />
+          {formError && (
+            <div className="p-3.5 rounded-xl bg-rose-50 text-rose-700 border border-rose-200 text-xs font-semibold flex items-center gap-2.5">
+              <ShieldAlert className="w-4 h-4 shrink-0 text-rose-500" />
+              <span>{formError}</span>
+            </div>
+          )}
 
-          <div className="grid grid-cols-2 gap-4">
+          {formSuccess && (
+            <div className="p-3.5 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-semibold flex items-center gap-2.5">
+              <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-500" />
+              <span>{formSuccess}</span>
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+            <div className="sm:col-span-2">
+              <Input
+                label="School Name"
+                required
+                placeholder="e.g. Cambridge Modern School"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              />
+            </div>
+            <div>
+              <Input
+                label="Student Capacity"
+                type="number"
+                min={10}
+                max={50000}
+                required
+                value={formData.studentCapacity}
+                onChange={(e) => setFormData({ ...formData, studentCapacity: parseInt(e.target.value, 10) || 500 })}
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <Input
               label="City"
               required
+              placeholder="e.g. Jaipur"
               value={formData.city}
               onChange={(e) => setFormData({ ...formData, city: e.target.value })}
             />
             <Input
               label="State"
               required
+              placeholder="e.g. Rajasthan"
               value={formData.state}
               onChange={(e) => setFormData({ ...formData, state: e.target.value })}
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <Input
-              label="Contact Person Name"
-              required
-              placeholder="Dr. S. K. Jain"
-              value={formData.contactPersonName}
-              onChange={(e) => setFormData({ ...formData, contactPersonName: e.target.value })}
-            />
-            <Input
-              label="Contact Phone"
-              required
-              placeholder="+91 98290 12345"
-              value={formData.contactPersonPhone}
-              onChange={(e) => setFormData({ ...formData, contactPersonPhone: e.target.value })}
-            />
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+            <div>
+              <Input
+                label="Contact Person Name"
+                required
+                placeholder="Dr. S. K. Jain"
+                value={formData.contactPersonName}
+                onChange={(e) => setFormData({ ...formData, contactPersonName: e.target.value })}
+              />
+            </div>
+            <div>
+              <Input
+                label="Contact Phone"
+                required
+                placeholder="+91 98290 12345"
+                value={formData.contactPersonPhone}
+                onChange={(e) => setFormData({ ...formData, contactPersonPhone: e.target.value })}
+              />
+            </div>
+            <div>
+              <Input
+                label="Contact Email"
+                type="email"
+                placeholder="defaults to admin email"
+                value={formData.contactPersonEmail}
+                onChange={(e) => setFormData({ ...formData, contactPersonEmail: e.target.value })}
+              />
+            </div>
           </div>
 
           <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200/80 space-y-3">
             <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider">
               Auto-Provision School Admin Account
             </h4>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <Input
-                label="Admin Email"
+                label="Admin Login Email"
                 type="email"
                 required
                 placeholder="principal@school.edu"
@@ -218,17 +326,30 @@ export const SuperAdminSchoolsPage: React.FC = () => {
               <Input
                 label="Initial Password"
                 required
+                placeholder="School@123"
                 value={formData.adminPassword}
                 onChange={(e) => setFormData({ ...formData, adminPassword: e.target.value })}
               />
             </div>
           </div>
 
-          <div className="flex justify-end gap-3 pt-3">
-            <Button type="button" variant="outline" onClick={() => setModalOpen(false)}>
+          <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2.5 sm:gap-3 pt-3 border-t border-slate-100">
+            <Button
+              type="button"
+              variant="outline"
+              disabled={isSubmitting}
+              onClick={() => setModalOpen(false)}
+              className="w-full sm:w-auto"
+            >
               Cancel
             </Button>
-            <Button type="submit" variant="primary" isLoading={isSubmitting}>
+            <Button
+              type="submit"
+              variant="primary"
+              isLoading={isSubmitting}
+              disabled={isSubmitting}
+              className="w-full sm:w-auto"
+            >
               Provision School Tenant
             </Button>
           </div>

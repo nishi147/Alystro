@@ -98,6 +98,7 @@ export async function getSchoolById(req: Request, res: Response): Promise<void> 
 }
 
 export async function createSchool(req: AuthenticatedRequest, res: Response): Promise<void> {
+  let createdSchool: any = null;
   try {
     const {
       name,
@@ -110,7 +111,51 @@ export async function createSchool(req: AuthenticatedRequest, res: Response): Pr
       adminPassword,
     } = req.body;
 
-    // Generate slug
+    // Validate school name
+    if (!name || typeof name !== 'string' || !name.trim()) {
+      res.status(400).json({ success: false, message: 'School name is required.' });
+      return;
+    }
+
+    // Check duplicate school name
+    const escapedName = name.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const existingSchool = await School.findOne({ name: { $regex: `^${escapedName}$`, $options: 'i' } });
+    if (existingSchool) {
+      res.status(409).json({ success: false, message: `A partner school named "${name.trim()}" is already registered.` });
+      return;
+    }
+
+    // Validate address
+    if (!address || !address.city || !address.state) {
+      res.status(400).json({ success: false, message: 'School city and state are required.' });
+      return;
+    }
+
+    // Validate contact person
+    if (!contactPerson || !contactPerson.name || !contactPerson.phone) {
+      res.status(400).json({ success: false, message: 'Contact person name and phone number are required.' });
+      return;
+    }
+
+    const effectiveContactEmail = (contactPerson.email || adminEmail || '').trim().toLowerCase();
+    if (!effectiveContactEmail) {
+      res.status(400).json({ success: false, message: 'A contact email address is required.' });
+      return;
+    }
+
+    const normalizedAdminEmail = (adminEmail || effectiveContactEmail).toLowerCase().trim();
+
+    // Check if an account with this admin email is already registered
+    const existingUser = await User.findOne({ email: normalizedAdminEmail });
+    if (existingUser) {
+      res.status(409).json({
+        success: false,
+        message: `An account with email "${normalizedAdminEmail}" already exists. Please choose a different school admin email.`,
+      });
+      return;
+    }
+
+    // Generate unique slug
     let baseSlug = name
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
@@ -122,51 +167,88 @@ export async function createSchool(req: AuthenticatedRequest, res: Response): Pr
     }
 
     // Generate unique school code
+    const cleanPrefix = name.replace(/[^a-zA-Z]/g, '').slice(0, 3).toUpperCase() || 'SCH';
     const randomCodeSuffix = Math.floor(100 + Math.random() * 900);
-    const code = `${name.slice(0, 3).toUpperCase()}-${randomCodeSuffix}`;
+    const code = `${cleanPrefix}-${randomCodeSuffix}`;
 
-    const school = await School.create({
-      name,
-      slug,
-      code,
-      address,
-      contactPerson,
-      classesServed: classesServed || ['Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10'],
-      studentCapacity: studentCapacity || 500,
-      programsEnrolled: programsEnrolled || [],
-      status: 'ACTIVE',
-    });
-
-    // Automatically create School Admin user account
-    if (adminEmail && adminPassword) {
-      const hashedPassword = await hashPassword(adminPassword);
-      await User.create({
-        name: contactPerson.name || `${name} Admin`,
-        email: adminEmail.toLowerCase().trim(),
-        password: hashedPassword,
-        role: 'SCHOOL_ADMIN',
-        school: school._id,
-        phone: contactPerson.phone,
+    try {
+      createdSchool = await School.create({
+        name: name.trim(),
+        slug,
+        code,
+        address: {
+          street: address.street || '',
+          city: address.city.trim(),
+          state: address.state.trim(),
+          pincode: address.pincode || '',
+          country: address.country || 'India',
+        },
+        contactPerson: {
+          name: contactPerson.name.trim(),
+          phone: contactPerson.phone.trim(),
+          email: effectiveContactEmail,
+          designation: contactPerson.designation || 'Principal',
+        },
+        classesServed: classesServed || ['Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10'],
+        studentCapacity: Number(studentCapacity) || 500,
+        programsEnrolled: programsEnrolled || [],
         status: 'ACTIVE',
       });
+
+      // Automatically create School Admin user account
+      const effectivePassword = adminPassword && adminPassword.trim() ? adminPassword.trim() : 'School@123';
+      const hashedPassword = await hashPassword(effectivePassword);
+
+      await User.create({
+        name: contactPerson.name.trim() || `${name.trim()} Admin`,
+        email: normalizedAdminEmail,
+        password: hashedPassword,
+        role: 'SCHOOL_ADMIN',
+        school: createdSchool._id,
+        phone: contactPerson.phone.trim(),
+        status: 'ACTIVE',
+      });
+
+      await AuditLog.create({
+        user: req.user?.userId,
+        userName: req.user?.name,
+        action: 'CREATE_SCHOOL',
+        entity: 'School',
+        entityId: createdSchool._id.toString(),
+        details: `Created new school: ${createdSchool.name} (${createdSchool.code}) with admin: ${normalizedAdminEmail}`,
+      }).catch((logErr) => console.warn('[AuditLog] Non-critical audit log write warning:', logErr.message));
+
+      res.status(201).json({
+        success: true,
+        message: 'School created successfully with dedicated admin credentials.',
+        data: createdSchool,
+      });
+    } catch (innerError: any) {
+      // Safe rollback: clean up orphaned school record if user provisioning fails
+      if (createdSchool && createdSchool._id) {
+        try {
+          await School.findByIdAndDelete(createdSchool._id);
+        } catch (cleanupErr: any) {
+          console.error('[createSchool] Rollback cleanup failed:', cleanupErr.message);
+        }
+      }
+      throw innerError;
     }
-
-    await AuditLog.create({
-      user: req.user?.userId,
-      userName: req.user?.name,
-      action: 'CREATE_SCHOOL',
-      entity: 'School',
-      entityId: school._id.toString(),
-      details: `Created new school: ${school.name} (${school.code})`,
-    });
-
-    res.status(201).json({
-      success: true,
-      message: 'School created successfully with dedicated admin credentials.',
-      data: school,
-    });
   } catch (error: any) {
-    res.status(500).json({ success: false, message: error.message });
+    console.error('[createSchool] Error:', error.message);
+    if (error.code === 11000) {
+      const dupField = Object.keys(error.keyPattern || {})[0] || 'field';
+      res.status(409).json({
+        success: false,
+        message: `A record with this ${dupField} already exists in the system.`,
+      });
+      return;
+    }
+    if (error.name === 'ValidationError') {
+      res.status(400).json({ success: false, message: error.message });
+      return;
+    }
+    res.status(500).json({ success: false, message: error.message || 'Failed to create school tenant.' });
   }
 }
 

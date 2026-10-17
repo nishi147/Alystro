@@ -143,6 +143,62 @@ async function runTests() {
     }
   });
 
+  // Test 10: Super Admin School Creation & Admin Provisioning
+  const testSchoolName = `Reg Test Academy ${Date.now()}`;
+  const testAdminEmail = `admin_${Date.now()}@regtest.edu`;
+  await assertTest('Super Admin School Creation & Admin Provisioning', async () => {
+    const res = await fetch(`${baseUrl}/schools`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${superAdminToken}`,
+      },
+      body: JSON.stringify({
+        name: testSchoolName,
+        address: { city: 'Jaipur', state: 'Rajasthan', country: 'India' },
+        contactPerson: { name: 'Principal Sharma', phone: '9829012399', email: testAdminEmail },
+        adminEmail: testAdminEmail,
+        adminPassword: 'School@123',
+        studentCapacity: 600,
+      }),
+    });
+    const json = await res.json();
+    if (res.status !== 201 || !json.data?._id) {
+      throw new Error(`School creation failed: status ${res.status}, ${JSON.stringify(json)}`);
+    }
+
+    // Verify created School Admin can log in
+    const loginRes = await fetch(`${baseUrl}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: testAdminEmail, password: 'School@123' }),
+    });
+    const loginJson = await loginRes.json();
+    if (!loginRes.ok || loginJson.data?.user?.role !== 'SCHOOL_ADMIN') {
+      throw new Error(`Newly provisioned School Admin failed to authenticate: ${JSON.stringify(loginJson)}`);
+    }
+  });
+
+  // Test 11: School Creation Validation & Duplicate Rejection
+  await assertTest('Duplicate School & Email Rejection (409 Conflict)', async () => {
+    // Attempt to create duplicate school with identical name
+    const res = await fetch(`${baseUrl}/schools`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${superAdminToken}`,
+      },
+      body: JSON.stringify({
+        name: testSchoolName,
+        address: { city: 'Jaipur', state: 'Rajasthan' },
+        contactPerson: { name: 'Principal Sharma', phone: '9829012399', email: 'another@test.edu' },
+      }),
+    });
+    if (res.status !== 409) {
+      throw new Error(`Expected 409 Conflict for duplicate school, got status ${res.status}`);
+    }
+  });
+
   console.log(`\n========================================`);
   console.log(`TEST RESULTS: ${passed} PASSED, ${failed} FAILED`);
   console.log(`========================================\n`);
