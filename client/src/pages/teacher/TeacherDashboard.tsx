@@ -11,6 +11,7 @@ import {
   Layers,
   Check,
   X,
+  ExternalLink,
 } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/Badge';
@@ -38,6 +39,65 @@ export const TeacherDashboard: React.FC = () => {
     dueDate: '',
     totalMarks: 50,
   });
+
+  // Submissions & Grading Modal State
+  const [submissionsModalOpen, setSubmissionsModalOpen] = useState(false);
+  const [selectedAssignment, setSelectedAssignment] = useState<Assignment | null>(null);
+  const [submissions, setSubmissions] = useState<any[]>([]);
+  const [isLoadingSubmissions, setIsLoadingSubmissions] = useState(false);
+  const [gradingSub, setGradingSub] = useState<any | null>(null);
+  const [gradeMarks, setGradeMarks] = useState<number>(0);
+  const [gradeFeedback, setGradeFeedback] = useState<string>('');
+  const [isGrading, setIsGrading] = useState(false);
+
+  const handleOpenSubmissions = async (asg: Assignment) => {
+    setSelectedAssignment(asg);
+    setGradingSub(null);
+    setSubmissionsModalOpen(true);
+    setIsLoadingSubmissions(true);
+    try {
+      const res = await api.get(`/assignments/${asg._id}/submissions`);
+      if (res.success && res.data) {
+        setSubmissions(res.data);
+      }
+    } catch (err: any) {
+      alert(err.message || 'Failed to load submissions');
+    } finally {
+      setIsLoadingSubmissions(false);
+    }
+  };
+
+  const handleStartGrading = (sub: any) => {
+    setGradingSub(sub);
+    setGradeMarks(sub.marksObtained ?? selectedAssignment?.totalMarks ?? 50);
+    setGradeFeedback(sub.feedback || '');
+  };
+
+  const handleSaveGrade = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!gradingSub) return;
+    setIsGrading(true);
+    try {
+      const res = await api.put(`/assignments/submissions/${gradingSub._id}/grade`, {
+        marksObtained: Number(gradeMarks),
+        feedback: gradeFeedback,
+      });
+      if (res.success) {
+        setSubmissions((prev) =>
+          prev.map((s) =>
+            s._id === gradingSub._id
+              ? { ...s, marksObtained: Number(gradeMarks), feedback: gradeFeedback, status: 'GRADED' }
+              : s
+          )
+        );
+        setGradingSub(null);
+      }
+    } catch (err: any) {
+      alert(err.message || 'Failed to save grade');
+    } finally {
+      setIsGrading(false);
+    }
+  };
 
   const loadData = async () => {
     try {
@@ -323,7 +383,7 @@ export const TeacherDashboard: React.FC = () => {
                   Due: {new Date(asg.dueDate).toLocaleDateString()}
                 </p>
               </div>
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" onClick={() => handleOpenSubmissions(asg)}>
                 View Submissions
               </Button>
             </div>
@@ -379,6 +439,120 @@ export const TeacherDashboard: React.FC = () => {
             </Button>
           </div>
         </form>
+      </Modal>
+
+      {/* Modal: View & Grade Submissions */}
+      <Modal
+        isOpen={submissionsModalOpen}
+        onClose={() => setSubmissionsModalOpen(false)}
+        title={`Submissions: ${selectedAssignment?.title || 'Assignment'}`}
+        maxWidth="2xl"
+      >
+        <div className="space-y-4">
+          <div className="flex items-center justify-between text-xs text-slate-500 pb-2 border-b border-slate-100">
+            <span>Total Marks: <strong className="text-slate-800">{selectedAssignment?.totalMarks}</strong></span>
+            <span>Submissions received: <strong className="text-brand-600">{submissions.length}</strong></span>
+          </div>
+
+          {isLoadingSubmissions ? (
+            <div className="py-12 text-center text-slate-400">Loading submissions...</div>
+          ) : submissions.length === 0 ? (
+            <div className="py-12 text-center text-slate-400">No submissions uploaded for this assignment yet.</div>
+          ) : (
+            <div className="space-y-3 max-h-96 overflow-y-auto pr-1">
+              {submissions.map((sub: any) => {
+                const studentName = sub.student?.user?.name || sub.student?.name || 'Student';
+                const isGraded = sub.status === 'GRADED';
+                const isCurrentlyGrading = gradingSub?._id === sub._id;
+
+                return (
+                  <div key={sub._id} className="p-4 rounded-xl border border-slate-200 bg-slate-50/50 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-bold text-navy-950">{studentName}</p>
+                        <p className="text-[11px] text-slate-400">
+                          Submitted: {new Date(sub.submittedAt).toLocaleString()}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Badge variant={isGraded ? 'success' : 'neutral'} size="sm">
+                          {isGraded ? `Graded: ${sub.marksObtained}/${selectedAssignment?.totalMarks}` : 'Pending Review'}
+                        </Badge>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleStartGrading(sub)}
+                        >
+                          {isGraded ? 'Update Grade' : 'Grade'}
+                        </Button>
+                      </div>
+                    </div>
+
+                    {sub.notes && (
+                      <p className="text-xs text-slate-600 bg-white p-2.5 rounded-lg border border-slate-100 italic">
+                        "{sub.notes}"
+                      </p>
+                    )}
+
+                    {sub.fileUrl && (
+                      <a
+                        href={sub.fileUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-600 hover:text-brand-700 bg-brand-50 px-3 py-1.5 rounded-lg transition"
+                      >
+                        <ExternalLink className="w-3.5 h-3.5" /> View Submitted Project File / Link
+                      </a>
+                    )}
+
+                    {sub.feedback && !isCurrentlyGrading && (
+                      <p className="text-xs text-emerald-700 bg-emerald-50 p-2.5 rounded-lg border border-emerald-100">
+                        <strong>Mentor Feedback:</strong> {sub.feedback}
+                      </p>
+                    )}
+
+                    {isCurrentlyGrading && (
+                      <form onSubmit={handleSaveGrade} className="pt-2 border-t border-slate-200 space-y-3 bg-white p-3 rounded-lg">
+                        <p className="text-xs font-bold text-slate-700">Enter Evaluation & Feedback</p>
+                        <div className="grid grid-cols-2 gap-3">
+                          <Input
+                            label={`Score (out of ${selectedAssignment?.totalMarks})`}
+                            type="number"
+                            required
+                            min={0}
+                            max={selectedAssignment?.totalMarks || 100}
+                            value={gradeMarks}
+                            onChange={(e) => setGradeMarks(Number(e.target.value))}
+                          />
+                          <Input
+                            label="Mentor Feedback"
+                            placeholder="e.g. Excellent storytelling, tighten transitions"
+                            value={gradeFeedback}
+                            onChange={(e) => setGradeFeedback(e.target.value)}
+                          />
+                        </div>
+                        <div className="flex justify-end gap-2">
+                          <Button size="sm" variant="ghost" type="button" onClick={() => setGradingSub(null)}>
+                            Cancel
+                          </Button>
+                          <Button size="sm" variant="primary" type="submit" isLoading={isGrading}>
+                            Save Grade
+                          </Button>
+                        </div>
+                      </form>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          <div className="flex justify-end pt-3 border-t border-slate-100">
+            <Button variant="ghost" onClick={() => setSubmissionsModalOpen(false)}>
+              Close
+            </Button>
+          </div>
+        </div>
       </Modal>
     </div>
   );
