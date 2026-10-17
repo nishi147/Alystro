@@ -74,7 +74,7 @@ Status Legend:
 | Recharts Revenue & Growth Charts | **COMPLETE** | `SuperAdminDashboard.tsx` | Monthly Enrollment Trends (BarChart) and Program Distribution (PieChart). |
 | School Tenants Directory | **COMPLETE** | `SuperAdminSchoolsPage.tsx` | List schools, search by name/city, and modal to create new school + provision admin credentials. |
 | CRM Kanban & Lead Management | **COMPLETE** | `SuperAdminCRMPage.tsx` | 6-stage pipeline Kanban, drag-and-drop status update, demo scheduling, 1-click lead conversion to school. |
-| All Students Multi-School Roster | **PARTIALLY COMPLETE** | `App.tsx` (route `/admin/students`) | Currently points to `SchoolAdminDashboard`; needs dedicated Super Admin cross-school student view. |
+| All Students Multi-School Roster | **COMPLETE** | `SuperAdminStudentsPage.tsx`, `/admin/students` | Dedicated cross-school student roster with school filter, search, and CSV export. |
 
 ---
 
@@ -85,8 +85,8 @@ Status Legend:
 | Student Roster & Search | **COMPLETE** | `SchoolAdminDashboard.tsx` | Search by student name/roll number, filter by grade. |
 | Add Student Modal | **COMPLETE** | `SchoolAdminDashboard.tsx` | Single student registration with batch assignment. |
 | Bulk CSV Student Import | **COMPLETE** | `studentController.ts`, `SchoolAdminDashboard.tsx` | Parses CSV text, registers student accounts in bulk with generated passwords. |
-| Teachers & Mentors Roster | **PARTIALLY COMPLETE** | `teacherController.ts`, `teacherRoutes.ts` | Backend CRUD exists; frontend dedicated table in School Admin view needs dedicated tab. |
-| Timetable & Batch Schedules | **PARTIALLY COMPLETE** | `batchController.ts`, `batchRoutes.ts` | Batches listed in dashboard; schedule editor modal needs expansion. |
+| Teachers & Mentors Roster | **COMPLETE** | `SchoolAdminDashboard.tsx`, `teacherController.ts` | Dedicated "Teachers & Mentors" tab with add teacher modal and roster listing. |
+| Timetable & Batch Schedules | **COMPLETE** | `SchoolAdminDashboard.tsx`, `batchController.ts` | Batches listed in dedicated tab with student capacity and timing badges. |
 
 ---
 
@@ -107,7 +107,7 @@ Status Legend:
 | Batch & Roster Selection | **COMPLETE** | `TeacherDashboard.tsx` | Dropdown to switch between assigned batches. |
 | Mark Daily Attendance | **COMPLETE** | `TeacherDashboard.tsx`, `attendanceController.ts` | Student roster with PRESENT, ABSENT, LATE toggles, topic covered input, saves to MongoDB. |
 | Create Assignment | **COMPLETE** | `TeacherDashboard.tsx`, `assignmentController.ts` | Modal to set assignment title, description, due date, total marks. |
-| Review & Grade Submissions | **PARTIALLY COMPLETE** | `assignmentController.ts` | Backend submission grading exists; grading modal in Teacher Dashboard needs UI surface. |
+| Review & Grade Submissions | **COMPLETE** | `TeacherDashboard.tsx`, `assignmentController.ts` | Modal to inspect submitted project files, student notes, enter marks and feedback inline. |
 
 ---
 
@@ -147,7 +147,7 @@ Status Legend:
 | Certificate Model & Unique IDs | **COMPLETE** | `models/Certificate.ts` | Format `ALY-2026-XXXXXX` with student name, school, program, issue date. |
 | Public QR Code Verification | **COMPLETE** | `CertificateVerificationPage.tsx` | Authenticates certificate by ID, generates QR code linking to verification URL. |
 | Printable Certificate Design | **COMPLETE** | `CertificateVerificationPage.tsx` | Styled with gold seals, signatures, clean CSS `@media print` layout. |
-| Admin Certificate Issuance UI | **PARTIALLY COMPLETE** | `certificateController.ts` | Backend `/generate` endpoint exists; dedicated admin certificate table/generator needs dedicated page. |
+| Admin Certificate Issuance UI | **COMPLETE** | `AdminCertificatesPage.tsx`, `/admin/certificates` | Filterable certificate directory, modal issuance with student/program pickers, status badges, CSV download. |
 
 ---
 
@@ -155,7 +155,7 @@ Status Legend:
 | Feature | Status | Evidence in Code | Notes |
 | :--- | :--- | :--- | :--- |
 | Super Admin Summary Stats | **COMPLETE** | `statsController.ts` | Aggregates school count, student count, total capacity, demo counts. |
-| CSV Export Utilities | **PARTIALLY COMPLETE** | `SchoolAdminDashboard.tsx` | CSV Import is implemented; direct CSV download buttons for students, attendance, and leads need to be added. |
+| CSV Export Utilities | **COMPLETE** | `utils/exportCsv.ts` | One-click CSV downloads wired across Student Rosters, Certificate records, and School data. |
 
 ---
 
@@ -173,7 +173,7 @@ Status Legend:
 | :--- | :--- | :--- | :--- |
 | CMS Database Model | **COMPLETE** | `models/CMSContent.ts` | Supports FAQ items, testimonials, student showcase items. |
 | CMS Controller & Endpoints | **COMPLETE** | `cmsController.ts`, `cmsRoutes.ts` | GET/POST/PUT endpoints for managing site content. |
-| Dedicated CMS Admin Page | **PARTIALLY COMPLETE** | `App.tsx` (route `/admin/cms`) | Currently renders `SuperAdminDashboard`; needs dedicated `SuperAdminCMSPage.tsx`. |
+| Dedicated CMS Admin Page | **COMPLETE** | `SuperAdminCMSPage.tsx`, `/admin/cms` | Category tabs (Programs, Testimonials, FAQs, Projects, All Blocks), structured visual editors, instant draft/publish toggling, and JSON preview. |
 
 ---
 
