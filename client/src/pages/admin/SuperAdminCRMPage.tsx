@@ -10,6 +10,7 @@ import {
   Clock,
   ExternalLink,
   ChevronRight,
+  Download,
 } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/Badge';
@@ -18,6 +19,7 @@ import { Input } from '../../components/ui/Input';
 import { Select } from '../../components/ui/Select';
 import { api } from '../../services/api';
 import { Lead } from '../../types';
+import { exportToCsv } from '../../utils/exportCsv';
 
 export const SuperAdminCRMPage: React.FC = () => {
   const [leads, setLeads] = useState<Lead[]>([]);
@@ -80,6 +82,21 @@ export const SuperAdminCRMPage: React.FC = () => {
     }
   };
 
+  const handleExportCsv = () => {
+    const dataToExport = leads.map((l) => ({
+      'School Name': l.schoolName,
+      'Contact Person': l.contactPerson,
+      Designation: l.designation || '',
+      Email: l.email,
+      Phone: l.phone,
+      City: l.city,
+      Status: l.status,
+      'Estimated Students': l.estimatedStudents,
+      'Created Date': new Date(l.createdAt).toLocaleDateString(),
+    }));
+    exportToCsv('ALYSTRO_CRM_Leads', dataToExport);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -89,6 +106,14 @@ export const SuperAdminCRMPage: React.FC = () => {
             Track inquiries, demo sessions, and institution conversions from initial contact to contract.
           </p>
         </div>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleExportCsv}
+          leftIcon={<Download className="w-4 h-4" />}
+        >
+          Export Leads CSV
+        </Button>
       </div>
 
       {/* 6-Stage Kanban Board */}

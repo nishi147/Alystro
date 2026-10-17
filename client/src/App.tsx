@@ -18,10 +18,12 @@ import { ContactPage } from './pages/public/ContactPage';
 import { CertificateVerificationPage } from './pages/public/CertificateVerificationPage';
 import { LoginPage } from './pages/public/LoginPage';
 
-// Dashboard Pages
 import { SuperAdminDashboard } from './pages/admin/SuperAdminDashboard';
 import { SuperAdminSchoolsPage } from './pages/admin/SuperAdminSchoolsPage';
 import { SuperAdminCRMPage } from './pages/admin/SuperAdminCRMPage';
+import { SuperAdminStudentsPage } from './pages/admin/SuperAdminStudentsPage';
+import { SuperAdminCMSPage } from './pages/admin/SuperAdminCMSPage';
+import { AdminCertificatesPage } from './pages/admin/AdminCertificatesPage';
 import { SchoolAdminDashboard } from './pages/school/SchoolAdminDashboard';
 import { TeacherDashboard } from './pages/teacher/TeacherDashboard';
 import { StudentDashboard } from './pages/student/StudentDashboard';
@@ -116,7 +118,7 @@ const AppContent: React.FC = () => {
           path="/admin/students"
           element={
             <ProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN']}>
-              <SchoolAdminDashboard />
+              <SuperAdminStudentsPage />
             </ProtectedRoute>
           }
         />
@@ -124,7 +126,7 @@ const AppContent: React.FC = () => {
           path="/admin/cms"
           element={
             <ProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN']}>
-              <SuperAdminDashboard />
+              <SuperAdminCMSPage />
             </ProtectedRoute>
           }
         />
@@ -132,7 +134,7 @@ const AppContent: React.FC = () => {
           path="/admin/certificates"
           element={
             <ProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN']}>
-              <CertificateVerificationPage />
+              <AdminCertificatesPage />
             </ProtectedRoute>
           }
         />
@@ -182,7 +184,15 @@ const AppContent: React.FC = () => {
           path="/school/certificates"
           element={
             <ProtectedRoute allowedRoles={['SCHOOL_ADMIN', 'SUPER_ADMIN']}>
-              <CertificateVerificationPage />
+              <AdminCertificatesPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/school/notices"
+          element={
+            <ProtectedRoute allowedRoles={['SCHOOL_ADMIN', 'SUPER_ADMIN']}>
+              <SchoolAdminDashboard />
             </ProtectedRoute>
           }
         />
