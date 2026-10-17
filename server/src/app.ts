@@ -1,4 +1,5 @@
 import express from 'express';
+import mongoose from 'mongoose';
 import cors from 'cors';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
@@ -18,21 +19,30 @@ app.use(
 );
 
 // CORS configuration — supports multiple origins via comma-separated CLIENT_URL env var
-const allowedOrigins = (config.clientUrl || '')
+const explicitOrigins = [
+  'https://alystro-4mln.vercel.app',
+  'https://alystro.vercel.app',
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'http://127.0.0.1:5173',
+];
+
+const envOrigins = (config.clientUrl || '')
   .split(',')
   .map((o) => o.trim())
-  .filter(Boolean)
-  .concat(['http://localhost:5173', 'http://localhost:5174', 'http://127.0.0.1:5173']);
+  .filter(Boolean);
+
+const allowedOrigins = Array.from(new Set([...explicitOrigins, ...envOrigins]));
 
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow requests with no origin (mobile apps, curl, Postman, etc.)
+      // Allow requests with no origin (mobile apps, curl, Postman, serverless internal, etc.)
       if (!origin) return callback(null, true);
       if (allowedOrigins.includes(origin)) {
         return callback(null, true);
       }
-      // In production allow *.vercel.app subdomains
+      // In production allow any valid Vercel preview branch deployment
       if (origin.endsWith('.vercel.app')) {
         return callback(null, true);
       }
@@ -66,14 +76,21 @@ if (config.nodeEnv !== 'test') {
   app.use(morgan('dev'));
 }
 
-// Health Check
-app.get('/health', (req, res) => {
-  res.json({
-    status: 'healthy',
+// Health Check Handlers (mounted at /health, /api/health, and /api/v1/health)
+const healthCheckHandler = (_req: express.Request, res: express.Response) => {
+  const isDbConnected = mongoose.connection.readyState === 1;
+  res.status(isDbConnected ? 200 : 503).json({
+    status: isDbConnected ? 'healthy' : 'degraded',
+    database: isDbConnected ? 'connected' : 'disconnected',
     timestamp: new Date().toISOString(),
     service: 'alystro-api-server',
+    uptime: Math.floor(process.uptime()),
   });
-});
+};
+
+app.get('/health', healthCheckHandler);
+app.get('/api/health', healthCheckHandler);
+app.get('/api/v1/health', healthCheckHandler);
 
 // Primary API v1 Router
 app.use('/api/v1', apiRouter);
