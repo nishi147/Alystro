@@ -2,7 +2,12 @@
 // Normalizes base URL whether set as https://alystro.vercel.app or https://alystro.vercel.app/api/v1
 
 export function getApiBaseUrl(): string {
-  const envUrl = import.meta.env.VITE_API_URL;
+  let envUrl = import.meta.env.VITE_API_URL;
+
+  // Auto-correct any invalid or misspelled backend domains (e.g. alystro-api.vercel.app)
+  if (typeof envUrl === 'string') {
+    envUrl = envUrl.replace(/https?:\/\/alystro-api\.vercel\.app/gi, 'https://alystro.vercel.app');
+  }
 
   if (envUrl && typeof envUrl === 'string' && envUrl.trim().length > 0) {
     let cleanUrl = envUrl.trim().replace(/\/+$/, '');
@@ -77,10 +82,27 @@ export async function apiRequest<T = any>(
       credentials: 'include',
     });
   } catch (netErr: any) {
-    throw new ApiError(
-      `Network connection error: Unable to reach ALYSTRO API server at ${base}. Please verify network connectivity.`,
-      0
-    );
+    const verifiedProdBackend = 'https://alystro.vercel.app/api/v1';
+    if (!fullUrl.startsWith(verifiedProdBackend) && !cleanEndpoint.startsWith('http')) {
+      try {
+        const fallbackUrl = `${verifiedProdBackend}${cleanEndpoint.startsWith('/') ? cleanEndpoint : `/${cleanEndpoint}`}`;
+        response = await fetch(fallbackUrl, {
+          ...options,
+          headers,
+          credentials: 'include',
+        });
+      } catch {
+        throw new ApiError(
+          `Network connection error: Unable to reach ALYSTRO API server at ${base}. Please verify network connectivity.`,
+          0
+        );
+      }
+    } else {
+      throw new ApiError(
+        `Network connection error: Unable to reach ALYSTRO API server at ${base}. Please verify network connectivity.`,
+        0
+      );
+    }
   }
 
   const contentType = response.headers.get('content-type') || '';
