@@ -199,6 +199,146 @@ async function runTests() {
     }
   });
 
+  // Test 12: Public School Self-Registration (Pending Status)
+  let pendingAppSchoolEmail = `applicant_${Date.now()}@newinstitution.edu`;
+  let pendingAppSchoolName = `Global Valley School ${Date.now()}`;
+  let pendingApplicantToken = '';
+  let pendingAppId = '';
+
+  await assertTest('Public School Self-Registration (Pending Status)', async () => {
+    const res = await fetch(`${baseUrl}/auth/register/school`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        schoolName: pendingAppSchoolName,
+        schoolEmail: pendingAppSchoolEmail,
+        schoolPhone: '+91 98290 88776',
+        city: 'Jaipur',
+        state: 'Rajasthan',
+        address: 'Plot 10, Knowledge City, Vidhyadhar Nagar',
+        contactPersonName: 'Prof. Anirudh Mehta',
+        contactPersonDesignation: 'School Director',
+        studentCount: 750,
+        classesOffered: ['Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10'],
+        interestedPrograms: ['Artificial Intelligence', 'Robotics'],
+        password: 'Password@123',
+        confirmPassword: 'Password@123',
+        termsAccepted: true,
+      }),
+    });
+    const json = await res.json();
+    if (res.status !== 201 || !json.data?.token || json.data?.user?.status !== 'PENDING_APPROVAL') {
+      throw new Error(`School registration failed: ${JSON.stringify(json)}`);
+    }
+    pendingApplicantToken = json.data.token;
+    pendingAppId = json.data.applicationId;
+  });
+
+  // Test 13: Strict Access Denial for Pending Users on Protected APIs
+  await assertTest('Strict Access Denial: Pending User Blocked from Protected APIs', async () => {
+    const res = await fetch(`${baseUrl}/stats/super-admin`, {
+      method: 'GET',
+      headers: { Authorization: `Bearer ${pendingApplicantToken}` },
+    });
+    if (res.status !== 403) {
+      throw new Error(`Expected 403 Forbidden for pending user on protected route, got ${res.status}`);
+    }
+  });
+
+  // Test 14: Pending User Application Status Tracking (/auth/my-status)
+  await assertTest('Application Status Endpoint Accessible to Pending User', async () => {
+    const res = await fetch(`${baseUrl}/auth/my-status`, {
+      method: 'GET',
+      headers: { Authorization: `Bearer ${pendingApplicantToken}` },
+    });
+    const json = await res.json();
+    if (!res.ok || json.data?.user?.status !== 'PENDING_APPROVAL' || !json.data?.application) {
+      throw new Error(`Failed to fetch status: ${JSON.stringify(json)}`);
+    }
+  });
+
+  // Test 15: Super Admin School Approval & Account Activation Workflow
+  await assertTest('Super Admin School Approval & Activation Workflow', async () => {
+    const approveRes = await fetch(`${baseUrl}/schools/applications/${pendingAppId}/approve`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${superAdminToken}`,
+      },
+    });
+    const approveJson = await approveRes.json();
+    if (!approveRes.ok || approveJson.data?.application?.status !== 'APPROVED') {
+      throw new Error(`Application approval failed: ${JSON.stringify(approveJson)}`);
+    }
+
+    // Authenticate with the newly approved school admin credentials
+    const loginRes = await fetch(`${baseUrl}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: pendingAppSchoolEmail, password: 'Password@123' }),
+    });
+    const loginJson = await loginRes.json();
+    if (!loginRes.ok || loginJson.data?.user?.status !== 'ACTIVE' || loginJson.data?.dashboardPath !== '/school') {
+      throw new Error(`Approved school admin login check failed: ${JSON.stringify(loginJson)}`);
+    }
+  });
+
+  // Test 16: Public Teacher Self-Registration
+  const testTeacherEmail = `mentor_${Date.now()}@educonnect.in`;
+  await assertTest('Public Teacher Self-Registration (Pending Affiliation)', async () => {
+    const res = await fetch(`${baseUrl}/auth/register/teacher`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: 'Vikas Sen',
+        email: testTeacherEmail,
+        phone: '+91 98290 55443',
+        isUnlistedSchool: true,
+        unlistedSchoolName: 'Pioneer International Academy',
+        unlistedSchoolCity: 'Jaipur',
+        unlistedSchoolState: 'Rajasthan',
+        qualification: 'M.Tech Computer Science',
+        experienceYears: 4,
+        password: 'Password@123',
+        confirmPassword: 'Password@123',
+        termsAccepted: true,
+      }),
+    });
+    const json = await res.json();
+    if (res.status !== 201 || json.data?.user?.status !== 'PENDING_APPROVAL') {
+      throw new Error(`Teacher registration failed: ${JSON.stringify(json)}`);
+    }
+  });
+
+  // Test 17: Public Student Self-Registration
+  const testStudentEmail = `learner_${Date.now()}@edumail.com`;
+  await assertTest('Public Student Self-Registration (Pending Enrollment)', async () => {
+    const res = await fetch(`${baseUrl}/auth/register/student`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: 'Devansh Khandelwal',
+        email: testStudentEmail,
+        phone: '+91 98290 11223',
+        isUnlistedSchool: true,
+        unlistedSchoolName: 'Pioneer International Academy',
+        unlistedSchoolCity: 'Jaipur',
+        unlistedSchoolState: 'Rajasthan',
+        grade: 'Class 9',
+        programInterest: 'AI & Machine Learning',
+        parentName: 'Sunil Khandelwal',
+        parentPhone: '+91 98290 11220',
+        password: 'Password@123',
+        confirmPassword: 'Password@123',
+        termsAccepted: true,
+      }),
+    });
+    const json = await res.json();
+    if (res.status !== 201 || json.data?.user?.status !== 'PENDING_APPROVAL') {
+      throw new Error(`Student registration failed: ${JSON.stringify(json)}`);
+    }
+  });
+
   console.log(`\n========================================`);
   console.log(`TEST RESULTS: ${passed} PASSED, ${failed} FAILED`);
   console.log(`========================================\n`);

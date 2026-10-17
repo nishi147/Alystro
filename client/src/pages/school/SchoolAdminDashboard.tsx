@@ -38,7 +38,9 @@ export const SchoolAdminDashboard: React.FC = () => {
   const [teachers, setTeachers] = useState<any[]>([]);
   const [notices, setNotices] = useState<any[]>([]);
 
-  const [activeTab, setActiveTab] = useState<'students' | 'teachers' | 'batches' | 'notices'>('students');
+  const [activeTab, setActiveTab] = useState<'students' | 'teachers' | 'batches' | 'notices' | 'affiliations'>('students');
+  const [affiliations, setAffiliations] = useState<any[]>([]);
+  const [affiliationLoading, setAffiliationLoading] = useState(false);
   const [search, setSearch] = useState('');
   const [selectedGrade, setSelectedGrade] = useState('ALL');
   const [isLoading, setIsLoading] = useState(true);
@@ -85,12 +87,13 @@ export const SchoolAdminDashboard: React.FC = () => {
 
   const loadData = async () => {
     try {
-      const [statsRes, studentsRes, batchesRes, teachersRes, noticesRes] = await Promise.all([
+      const [statsRes, studentsRes, batchesRes, teachersRes, noticesRes, affilRes] = await Promise.all([
         api.get('/stats/school'),
         api.get(`/students?search=${encodeURIComponent(search)}`),
         api.get('/batches'),
         api.get('/teachers'),
         api.get('/notices'),
+        api.get('/schools/affiliations/requests').catch(() => ({ success: false })),
       ]);
 
       if (statsRes.success) setStats(statsRes.data?.summary);
@@ -103,10 +106,45 @@ export const SchoolAdminDashboard: React.FC = () => {
       }
       if (teachersRes.success) setTeachers(teachersRes.data || []);
       if (noticesRes.success) setNotices(noticesRes.data || []);
+      if (affilRes?.success && Array.isArray(affilRes.data)) setAffiliations(affilRes.data);
     } catch (err) {
       console.error(err);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleApproveAffiliation = async (id: string) => {
+    setAffiliationLoading(true);
+    try {
+      const res = await api.post(`/schools/affiliations/${id}/approve`);
+      if (res.success) {
+        loadData();
+      } else {
+        alert(res.message || 'Failed to approve affiliation.');
+      }
+    } catch (err: any) {
+      alert(err.message || 'Failed to approve affiliation.');
+    } finally {
+      setAffiliationLoading(false);
+    }
+  };
+
+  const handleRejectAffiliation = async (id: string) => {
+    const reason = window.prompt('Specify a rejection reason:');
+    if (!reason) return;
+    setAffiliationLoading(true);
+    try {
+      const res = await api.post(`/schools/affiliations/${id}/reject`, { reason });
+      if (res.success) {
+        loadData();
+      } else {
+        alert(res.message || 'Failed to reject affiliation.');
+      }
+    } catch (err: any) {
+      alert(err.message || 'Failed to reject affiliation.');
+    } finally {
+      setAffiliationLoading(false);
     }
   };
 
@@ -349,6 +387,22 @@ export const SchoolAdminDashboard: React.FC = () => {
             <Bell className="w-4 h-4" />
             Notice Board ({notices.length})
           </button>
+          <button
+            onClick={() => setActiveTab('affiliations')}
+            className={`pb-3 text-sm font-bold border-b-2 transition flex items-center gap-2 ${
+              activeTab === 'affiliations'
+                ? 'border-brand-500 text-brand-600'
+                : 'border-transparent text-slate-500 hover:text-slate-800'
+            }`}
+          >
+            <UserCheck className="w-4 h-4" />
+            <span>Affiliation Requests</span>
+            {affiliations.filter((a) => a.status === 'PENDING').length > 0 && (
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-500 text-white animate-pulse">
+                {affiliations.filter((a) => a.status === 'PENDING').length}
+              </span>
+            )}
+          </button>
         </div>
       </div>
 
@@ -540,6 +594,113 @@ export const SchoolAdminDashboard: React.FC = () => {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* TAB 5: AFFILIATION REQUESTS */}
+      {activeTab === 'affiliations' && (
+        <div className="space-y-4">
+          <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-soft flex items-center justify-between">
+            <div>
+              <h3 className="text-sm font-bold text-navy-950">Campus Affiliation & Enrollment Queue</h3>
+              <p className="text-xs text-slate-500">
+                Authorize teachers and students requesting to link with your school tenant.
+              </p>
+            </div>
+            <span className="text-xs font-semibold text-slate-500">
+              Total Requests: <strong className="text-slate-900">{affiliations.length}</strong>
+            </span>
+          </div>
+
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-soft overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-slate-50 border-b border-slate-100 text-slate-500 uppercase tracking-wider font-semibold">
+                  <tr>
+                    <th className="py-3.5 px-6">Applicant Name</th>
+                    <th className="py-3.5 px-6">Role</th>
+                    <th className="py-3.5 px-6">Submitted Details</th>
+                    <th className="py-3.5 px-6">Requested On</th>
+                    <th className="py-3.5 px-6">Status</th>
+                    <th className="py-3.5 px-6 text-right">Decision Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 text-slate-700">
+                  {affiliations.length === 0 && (
+                    <tr>
+                      <td colSpan={6} className="py-12 text-center text-slate-400">
+                        No pending affiliation requests for this campus.
+                      </td>
+                    </tr>
+                  )}
+                  {affiliations.map((req) => (
+                    <tr key={req._id} className="hover:bg-slate-50/70 transition">
+                      <td className="py-4 px-6">
+                        <p className="font-bold text-slate-900 text-sm">{req.user?.name}</p>
+                        <p className="text-[11px] text-slate-400">{req.user?.email} • {req.user?.phone || 'No phone'}</p>
+                      </td>
+                      <td className="py-4 px-6">
+                        <Badge variant={req.role === 'TEACHER' ? 'primary' : 'success'}>
+                          {req.role}
+                        </Badge>
+                      </td>
+                      <td className="py-4 px-6">
+                        {req.role === 'TEACHER' ? (
+                          <div>
+                            <p className="font-semibold text-slate-800">{req.details?.qualification || 'Educator'}</p>
+                            <p className="text-[11px] text-slate-400">{req.details?.experienceYears || 0} yrs experience</p>
+                          </div>
+                        ) : (
+                          <div>
+                            <p className="font-semibold text-slate-800">{req.details?.grade || 'Student'}</p>
+                            <p className="text-[11px] text-slate-400">Parent: {req.details?.parentName || 'N/A'} ({req.details?.parentPhone || 'N/A'})</p>
+                          </div>
+                        )}
+                      </td>
+                      <td className="py-4 px-6 text-slate-500">
+                        {new Date(req.createdAt).toLocaleDateString()}
+                      </td>
+                      <td className="py-4 px-6">
+                        <Badge
+                          variant={
+                            req.status === 'APPROVED' ? 'success' : req.status === 'REJECTED' ? 'danger' : 'warning'
+                          }
+                          dot
+                        >
+                          {req.status}
+                        </Badge>
+                      </td>
+                      <td className="py-4 px-6 text-right">
+                        {req.status === 'PENDING' ? (
+                          <div className="flex items-center justify-end gap-2">
+                            <Button
+                              variant="primary"
+                              size="sm"
+                              disabled={affiliationLoading}
+                              onClick={() => handleApproveAffiliation(req._id)}
+                            >
+                              Approve
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              disabled={affiliationLoading}
+                              className="text-rose-600 hover:bg-rose-50 border-rose-200"
+                              onClick={() => handleRejectAffiliation(req._id)}
+                            >
+                              Reject
+                            </Button>
+                          </div>
+                        ) : (
+                          <span className="text-[11px] text-slate-400 italic">Resolved</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       )}

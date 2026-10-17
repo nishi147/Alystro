@@ -94,6 +94,17 @@ export const LoginPage: React.FC = () => {
             <Button type="submit" variant="primary" className="w-full py-3 font-bold mt-2" isLoading={isLoading}>
               Sign In to ALYSTRO
             </Button>
+
+            {/* Create Account / Sign Up Link */}
+            <div className="pt-3 text-center">
+              <span className="text-xs text-slate-500">Don't have an ALYSTRO account yet? </span>
+              <Link
+                to="/register"
+                className="text-xs font-bold text-brand-600 hover:text-brand-700 hover:underline"
+              >
+                Create Account / Sign Up
+              </Link>
+            </div>
           </form>
 
           {/* Quick Demo Credentials Box */}
@@ -139,7 +150,10 @@ export const LoginPage: React.FC = () => {
         </div>
 
         <p className="text-center text-xs text-slate-400 mt-6">
-          Need school tenant onboarding? <Link to="/contact" className="text-brand-600 font-semibold">Contact support</Link>
+          Are you an institution or partner?{' '}
+          <Link to="/register" className="text-brand-600 font-semibold hover:underline">
+            Register your School Tenant
+          </Link>
         </p>
       </div>
     </div>

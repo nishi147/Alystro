@@ -14,7 +14,92 @@ export interface User {
   } | null;
   avatar?: string;
   phone?: string;
-  status: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
+  status: 'ACTIVE' | 'PENDING_APPROVAL' | 'REJECTED' | 'INACTIVE' | 'SUSPENDED';
+  rejectionReason?: string;
+  approvedAt?: string;
+  approvedBy?: string;
+  schoolAffiliationStatus?: 'PENDING' | 'APPROVED' | 'REJECTED';
+  proposedSchoolName?: string;
+  proposedSchoolCity?: string;
+  proposedSchoolState?: string;
+  createdAt?: string;
+}
+
+export interface SchoolApplication {
+  _id: string;
+  schoolName: string;
+  schoolEmail: string;
+  schoolPhone: string;
+  city: string;
+  state: string;
+  address: string;
+  contactPersonName: string;
+  contactPersonDesignation?: string;
+  studentCount?: number;
+  classesOffered: string[];
+  interestedPrograms: string[];
+  website?: string;
+  adminUser: {
+    _id: string;
+    name: string;
+    email: string;
+    phone?: string;
+    status: string;
+  };
+  status: 'PENDING_APPROVAL' | 'APPROVED' | 'REJECTED';
+  rejectionReason?: string;
+  approvedAt?: string;
+  approvedBy?: {
+    _id: string;
+    name: string;
+    email: string;
+  };
+  createdSchool?: string | School;
+  notes?: string;
+  createdAt: string;
+}
+
+export interface AffiliationRequest {
+  _id: string;
+  user: {
+    _id: string;
+    name: string;
+    email: string;
+    phone?: string;
+    avatar?: string;
+    status: string;
+  };
+  role: 'TEACHER' | 'STUDENT';
+  school?: {
+    _id: string;
+    name: string;
+    code: string;
+    city: string;
+    state: string;
+  };
+  proposedSchool?: {
+    name: string;
+    city: string;
+    state: string;
+  };
+  details: {
+    qualification?: string;
+    experienceYears?: number;
+    grade?: string;
+    programInterest?: string;
+    parentName?: string;
+    parentPhone?: string;
+    enrollmentCode?: string;
+  };
+  status: 'PENDING' | 'APPROVED' | 'REJECTED';
+  rejectionReason?: string;
+  reviewedBy?: {
+    _id: string;
+    name: string;
+    email: string;
+  };
+  reviewedAt?: string;
+  createdAt: string;
 }
 
 export interface School {

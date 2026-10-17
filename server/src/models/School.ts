@@ -28,7 +28,8 @@ export interface ISchool extends Document {
   startDate: Date;
   endDate?: Date;
   paymentStatus: 'PAID' | 'PENDING' | 'PARTIAL' | 'OVERDUE';
-  status: 'ACTIVE' | 'INACTIVE' | 'TRIAL' | 'ARCHIVED';
+  status: 'PENDING_APPROVAL' | 'APPROVED' | 'ACTIVE' | 'INACTIVE' | 'TRIAL' | 'ARCHIVED' | 'REJECTED' | 'SUSPENDED';
+  rejectionReason?: string;
   features: {
     enableLMS: boolean;
     enableCertificates: boolean;
@@ -73,10 +74,11 @@ const SchoolSchema = new Schema<ISchool>(
     },
     status: {
       type: String,
-      enum: ['ACTIVE', 'INACTIVE', 'TRIAL', 'ARCHIVED'],
+      enum: ['PENDING_APPROVAL', 'APPROVED', 'ACTIVE', 'INACTIVE', 'TRIAL', 'ARCHIVED', 'REJECTED', 'SUSPENDED'],
       default: 'ACTIVE',
       index: true,
     },
+    rejectionReason: { type: String },
     features: {
       enableLMS: { type: Boolean, default: true },
       enableCertificates: { type: Boolean, default: true },

@@ -8,7 +8,14 @@ export interface IUser extends Document {
   school?: mongoose.Types.ObjectId;
   phone?: string;
   avatar?: string;
-  status: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
+  status: 'ACTIVE' | 'PENDING_APPROVAL' | 'REJECTED' | 'INACTIVE' | 'SUSPENDED';
+  rejectionReason?: string;
+  approvedAt?: Date;
+  approvedBy?: mongoose.Types.ObjectId;
+  schoolAffiliationStatus?: 'PENDING' | 'APPROVED' | 'REJECTED';
+  proposedSchoolName?: string;
+  proposedSchoolCity?: string;
+  proposedSchoolState?: string;
   lastLogin?: Date;
   createdAt: Date;
   updatedAt: Date;
@@ -30,10 +37,20 @@ const UserSchema = new Schema<IUser>(
     avatar: { type: String },
     status: {
       type: String,
-      enum: ['ACTIVE', 'INACTIVE', 'SUSPENDED'],
+      enum: ['ACTIVE', 'PENDING_APPROVAL', 'REJECTED', 'INACTIVE', 'SUSPENDED'],
       default: 'ACTIVE',
       index: true,
     },
+    rejectionReason: { type: String },
+    approvedAt: { type: Date },
+    approvedBy: { type: Schema.Types.ObjectId, ref: 'User' },
+    schoolAffiliationStatus: {
+      type: String,
+      enum: ['PENDING', 'APPROVED', 'REJECTED'],
+    },
+    proposedSchoolName: { type: String, trim: true },
+    proposedSchoolCity: { type: String, trim: true },
+    proposedSchoolState: { type: String, trim: true },
     lastLogin: { type: Date },
   },
   { timestamps: true }

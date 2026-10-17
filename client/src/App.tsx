@@ -17,6 +17,8 @@ import { AboutPage } from './pages/public/AboutPage';
 import { ContactPage } from './pages/public/ContactPage';
 import { CertificateVerificationPage } from './pages/public/CertificateVerificationPage';
 import { LoginPage } from './pages/public/LoginPage';
+import { RegisterPage } from './pages/public/RegisterPage';
+import { ApplicationStatusPage } from './pages/public/ApplicationStatusPage';
 
 import { SuperAdminDashboard } from './pages/admin/SuperAdminDashboard';
 import { SuperAdminSchoolsPage } from './pages/admin/SuperAdminSchoolsPage';
@@ -46,6 +48,11 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode; allowedRoles?: strin
     return <Navigate to="/login" replace />;
   }
 
+  // Critical Access Control: Pending or rejected applicants are routed to status page
+  if (user && (user.status === 'PENDING_APPROVAL' || user.status === 'REJECTED')) {
+    return <Navigate to="/application-status" replace />;
+  }
+
   if (allowedRoles && user && !allowedRoles.includes(user.role)) {
     // Redirect to their own dashboard
     const redirectMap: Record<string, string> = {
@@ -68,7 +75,10 @@ const AppContent: React.FC = () => {
     location.pathname.startsWith('/admin') ||
     location.pathname.startsWith('/school') ||
     location.pathname.startsWith('/teacher') ||
-    location.pathname.startsWith('/student');
+    location.pathname.startsWith('/student') ||
+    location.pathname === '/application-status' ||
+    location.pathname === '/register' ||
+    location.pathname === '/login';
 
   return (
     <>
@@ -87,6 +97,8 @@ const AppContent: React.FC = () => {
         <Route path="/verify" element={<CertificateVerificationPage />} />
         <Route path="/verify/:certificateId" element={<CertificateVerificationPage />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/application-status" element={<ApplicationStatusPage />} />
         <Route path="/forgot-password" element={<LoginPage />} />
 
         {/* Super Admin / Admin Routes */}
