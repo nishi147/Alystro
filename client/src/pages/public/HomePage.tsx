@@ -312,165 +312,201 @@ export const HomePage: React.FC = () => {
       </section>
 
       {/* 4. What We Teach */}
-      <section className="py-20 bg-slate-50">
+      <section className="py-12 sm:py-20 bg-slate-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <Badge variant="primary" className="mb-3">Core Curriculum</Badge>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-navy-950 font-display tracking-tight mb-4">
+          <Badge variant="primary" className="mb-2 sm:mb-3">Core Curriculum</Badge>
+          <h2 className="text-2xl sm:text-4xl font-extrabold text-navy-950 font-display tracking-tight mb-2 sm:mb-4">
             What We Teach
           </h2>
-          <p className="text-slate-600 max-w-2xl mx-auto text-sm sm:text-base mb-14">
+          <p className="text-slate-600 max-w-2xl mx-auto text-xs sm:text-base mb-6 sm:mb-14">
             A comprehensive, grade-appropriate curriculum blending AI, Coding, Video Editing and Freelancing — real skills the world is demanding now.
           </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-left">
+
+          {/* Swipeable slider on mobile, Grid on desktop */}
+          <div className="flex sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-6 overflow-x-auto sm:overflow-visible snap-x snap-mandatory pb-3 sm:pb-0 -mx-4 px-4 sm:mx-0 sm:px-0 no-scrollbar text-left">
             {whatWeTeach.map((item) => (
               <div
                 key={item.title}
-                className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-soft hover:shadow-card hover:-translate-y-1 transition-all group"
+                className="w-[72vw] max-w-[270px] sm:w-auto sm:max-w-none shrink-0 snap-center bg-white rounded-2xl p-5 sm:p-6 border border-slate-200/80 shadow-soft hover:shadow-card hover:-translate-y-1 transition-all group flex flex-col justify-between"
               >
-                <div className="w-12 h-12 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center mb-5 group-hover:bg-brand-50 transition-colors">
-                  {item.icon}
+                <div>
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center mb-4 sm:mb-5 group-hover:bg-brand-50 transition-colors">
+                    {item.icon}
+                  </div>
+                  <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-1.5 sm:mb-2">{item.title}</h3>
+                  <p className="text-xs sm:text-sm text-slate-500 leading-relaxed">{item.desc}</p>
                 </div>
-                <h3 className="text-lg font-bold text-slate-900 mb-2">{item.title}</h3>
-                <p className="text-xs sm:text-sm text-slate-500 leading-relaxed">{item.desc}</p>
               </div>
             ))}
+          </div>
+          {/* Mobile swipe indicator */}
+          <div className="flex sm:hidden items-center justify-center gap-1.5 mt-2.5 text-[11px] text-slate-400 font-medium">
+            <span>← Swipe to explore 4 subjects →</span>
           </div>
         </div>
       </section>
 
       {/* 5. Program Structure */}
-      <section className="py-12 bg-white border-y border-slate-100">
+      <section className="py-10 sm:py-12 bg-white border-y border-slate-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-10">
+          <div className="text-center mb-6 sm:mb-10">
             <Badge variant="primary" className="mb-2">Program Structure</Badge>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-navy-950 font-display">How the Program Runs</h2>
+            <h2 className="text-xl sm:text-3xl font-extrabold text-navy-950 font-display">How the Program Runs</h2>
           </div>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             {programStructure.map((item) => (
-              <div key={item.label} className="bg-slate-50 rounded-2xl p-5 border border-slate-200 text-center">
-                <div className="w-10 h-10 rounded-xl bg-brand-50 flex items-center justify-center mx-auto mb-3">
+              <div key={item.label} className="bg-slate-50 rounded-2xl p-4 sm:p-5 border border-slate-200 text-center">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-brand-50 flex items-center justify-center mx-auto mb-2 sm:mb-3">
                   {item.icon}
                 </div>
-                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">{item.label}</p>
-                <p className="text-sm font-bold text-navy-950">{item.value}</p>
+                <p className="text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider mb-0.5 sm:mb-1">{item.label}</p>
+                <p className="text-xs sm:text-sm font-bold text-navy-950">{item.value}</p>
               </div>
             ))}
           </div>
-          <p className="text-center text-xs text-slate-400 mt-4">Saturday & Sunday Off — Balanced learning alongside regular education</p>
+          <p className="text-center text-[11px] sm:text-xs text-slate-400 mt-3 sm:mt-4">Saturday & Sunday Off — Balanced learning alongside regular education</p>
         </div>
       </section>
 
       {/* 6. Our Programs */}
-      <section className="py-20 bg-slate-50">
+      <section className="py-12 sm:py-20 bg-slate-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <Badge variant="primary" className="mb-3">For Classes 6 to 12</Badge>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-navy-950 font-display tracking-tight mb-4">
+          <Badge variant="primary" className="mb-2 sm:mb-3">For Classes 6 to 12</Badge>
+          <h2 className="text-2xl sm:text-4xl font-extrabold text-navy-950 font-display tracking-tight mb-2 sm:mb-4">
             Our Programs
           </h2>
-          <p className="text-slate-600 max-w-2xl mx-auto text-sm sm:text-base mb-14">
+          <p className="text-slate-600 max-w-2xl mx-auto text-xs sm:text-base mb-6 sm:mb-14">
             A complete 3-month practical learning journey structured by class level so every student gets exactly what they need.
           </p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
+
+          {/* Swipeable slider on mobile, Grid on desktop */}
+          <div className="flex md:grid md:grid-cols-3 gap-4 md:gap-8 overflow-x-auto md:overflow-visible snap-x snap-mandatory pb-3 md:pb-0 -mx-4 px-4 md:mx-0 md:px-0 no-scrollbar text-left">
             {programs.map((prog) => (
               <div
                 key={prog.title}
-                className={`rounded-2xl border bg-white p-8 shadow-soft hover:shadow-card hover:-translate-y-1 transition-all flex flex-col justify-between ${prog.color}`}
+                className={`w-[85vw] max-w-[320px] md:w-auto md:max-w-none shrink-0 snap-center rounded-2xl border bg-white p-5 sm:p-8 shadow-soft hover:shadow-card hover:-translate-y-1 transition-all flex flex-col justify-between ${prog.color}`}
               >
                 <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-xs font-bold uppercase tracking-wider text-brand-600 bg-brand-50 px-3 py-1 rounded-full border border-brand-200/60">
+                  <div className="flex items-center justify-between mb-3 sm:mb-4">
+                    <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-brand-600 bg-brand-50 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full border border-brand-200/60">
                       {prog.grade}
                     </span>
                     <span className="text-2xl">{prog.icon}</span>
                   </div>
-                  <h3 className="text-xl font-bold text-slate-900 mb-1">{prog.title}</h3>
-                  <p className="text-xs sm:text-sm text-slate-500 mb-4 leading-relaxed italic">
+                  <h3 className="text-lg sm:text-xl font-bold text-slate-900 mb-1">{prog.title}</h3>
+                  <p className="text-xs sm:text-sm text-slate-500 mb-3 sm:mb-4 leading-relaxed italic line-clamp-2 md:line-clamp-none">
                     Goal: {prog.tagline}
                   </p>
-                  <ul className="space-y-1.5 mb-6">
-                    {prog.highlights.map((h) => (
-                      <li key={h} className="text-xs text-slate-600 flex items-start gap-2">
+                  <ul className="space-y-1 sm:space-y-1.5 mb-5 sm:mb-6">
+                    {prog.highlights.slice(0, 5).map((h) => (
+                      <li key={h} className="text-xs text-slate-600 flex items-start gap-1.5 sm:gap-2">
                         <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-0.5" />
-                        <span>{h}</span>
+                        <span className="line-clamp-1 sm:line-clamp-none">{h}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
-                <Link to={prog.link} className="inline-flex items-center text-sm font-bold text-brand-600 hover:text-brand-700 group mt-4">
-                  Learn More <ArrowRight className="w-4 h-4 ml-1.5 group-hover:translate-x-1 transition-transform" />
+                <Link to={prog.link} className="inline-flex items-center text-xs sm:text-sm font-bold text-brand-600 hover:text-brand-700 group mt-2 pt-3 border-t border-slate-100">
+                  Explore Full Curriculum <ArrowRight className="w-3.5 h-3.5 ml-1.5 group-hover:translate-x-1 transition-transform" />
                 </Link>
               </div>
             ))}
+          </div>
+          {/* Mobile swipe indicator */}
+          <div className="flex md:hidden items-center justify-center gap-1.5 mt-2.5 text-[11px] text-slate-400 font-medium">
+            <span>← Swipe to explore 3 class levels →</span>
           </div>
         </div>
       </section>
 
       {/* 7. Why ALYSTRO */}
-      <section className="py-20 bg-navy-950 text-white">
+      <section className="py-12 sm:py-20 bg-navy-950 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <Badge variant="navy" className="mb-3">Why ALYSTRO?</Badge>
-          <h2 className="text-3xl sm:text-4xl font-extrabold font-display tracking-tight mb-4">
+          <Badge variant="navy" className="mb-2 sm:mb-3">Why ALYSTRO?</Badge>
+          <h2 className="text-2xl sm:text-4xl font-extrabold font-display tracking-tight mb-2 sm:mb-4">
             ALYSTRO is Not Just Another Course
           </h2>
-          <p className="text-slate-300 max-w-2xl mx-auto text-sm sm:text-base mb-14">
+          <p className="text-slate-300 max-w-2xl mx-auto text-xs sm:text-base mb-6 sm:mb-14">
             It is a complete digital skills journey built for Indian schools, giving students real, usable skills alongside their regular education.
           </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 text-left">
+
+          {/* Swipeable slider on mobile, Grid on desktop */}
+          <div className="flex sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-6 overflow-x-auto sm:overflow-visible snap-x snap-mandatory pb-3 sm:pb-0 -mx-4 px-4 sm:mx-0 sm:px-0 no-scrollbar text-left">
             {whyAlystro.map((feat) => (
-              <div key={feat.name} className="bg-navy-900/70 rounded-2xl p-6 border border-navy-800 hover:border-brand-500/50 transition-all">
-                <div className="w-10 h-10 rounded-xl bg-brand-500/20 text-brand-400 flex items-center justify-center font-bold mb-4">
-                  <CheckCircle2 className="w-5 h-5" />
+              <div
+                key={feat.name}
+                className="w-[74vw] max-w-[260px] sm:w-auto sm:max-w-none shrink-0 snap-center bg-navy-900/70 rounded-2xl p-5 sm:p-6 border border-navy-800 hover:border-brand-500/50 transition-all flex flex-col justify-between"
+              >
+                <div>
+                  <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-brand-500/20 text-brand-400 flex items-center justify-center font-bold mb-3 sm:mb-4">
+                    <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5" />
+                  </div>
+                  <h3 className="text-sm sm:text-base font-bold text-white mb-1">{feat.name}</h3>
+                  <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">{feat.desc}</p>
                 </div>
-                <h3 className="text-base font-bold text-white mb-1.5">{feat.name}</h3>
-                <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">{feat.desc}</p>
               </div>
             ))}
+          </div>
+          {/* Mobile swipe indicator */}
+          <div className="flex sm:hidden items-center justify-center gap-1.5 mt-2.5 text-[11px] text-slate-400 font-medium">
+            <span>← Swipe to view all 6 pillars →</span>
           </div>
         </div>
       </section>
 
       {/* 8. Vision Quote */}
-      <section className="py-16 bg-brand-50 border-y border-brand-100">
+      <section className="py-12 sm:py-16 bg-brand-50 border-y border-brand-100">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="text-5xl text-brand-200 font-serif mb-4">"</div>
-          <blockquote className="text-xl sm:text-2xl font-bold text-navy-950 font-display leading-snug mb-6">
-            To help schools prepare students not only for exams,<br />
-            but also for the digital world of tomorrow.
+          <div className="text-3xl sm:text-5xl text-brand-200 font-serif mb-2 sm:mb-4">"</div>
+          <blockquote className="text-lg sm:text-2xl font-bold text-navy-950 font-display leading-snug mb-4 sm:mb-6">
+            To help schools prepare students not only for exams,<br className="hidden sm:inline" />
+            {" "}but also for the digital world of tomorrow.
           </blockquote>
-          <p className="text-sm font-semibold text-brand-600 uppercase tracking-wider">— Our Vision</p>
+          <p className="text-xs sm:text-sm font-semibold text-brand-600 uppercase tracking-wider">— Our Vision</p>
         </div>
       </section>
 
       {/* 9. Student Work Gallery */}
-      <section className="py-20 bg-slate-50">
+      <section className="py-12 sm:py-20 bg-slate-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-12">
+          <div className="flex items-end justify-between mb-6 sm:mb-12">
             <div>
-              <Badge variant="primary" className="mb-2">Project Gallery</Badge>
-              <h2 className="text-3xl sm:text-4xl font-extrabold text-navy-950 font-display">Our Student Work</h2>
-              <p className="text-sm text-slate-500 mt-1">Real projects created by real students during our live sessions.</p>
+              <Badge variant="primary" className="mb-1.5 sm:mb-2">Project Gallery</Badge>
+              <h2 className="text-2xl sm:text-4xl font-extrabold text-navy-950 font-display">Our Student Work</h2>
+              <p className="text-xs sm:text-sm text-slate-500 mt-0.5 sm:mt-1">Real projects created by real students during our live sessions.</p>
             </div>
-            <Link to="/projects" className="mt-4 sm:mt-0">
-              <Button variant="outline" size="sm" rightIcon={<ArrowRight className="w-4 h-4" />}>
-                View All Projects
+            <Link to="/projects" className="shrink-0 ml-3">
+              <Button variant="outline" size="sm" rightIcon={<ArrowRight className="w-3.5 h-3.5" />}>
+                View All
               </Button>
             </Link>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+
+          {/* Swipeable slider on mobile, Grid on desktop */}
+          <div className="flex sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-6 overflow-x-auto sm:overflow-visible snap-x snap-mandatory pb-3 sm:pb-0 -mx-4 px-4 sm:mx-0 sm:px-0 no-scrollbar">
             {studentWorks.map((work) => (
-              <div key={work.title} className="bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-soft group hover:shadow-card transition-all">
-                <div className="relative h-44 overflow-hidden">
-                  <img src={work.img} alt={work.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                  <span className="absolute top-3 left-3 bg-navy-950/80 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-0.5 rounded-md">
-                    {work.grade}
-                  </span>
-                </div>
-                <div className="p-4">
-                  <span className="text-[11px] font-semibold text-brand-600 uppercase tracking-wider">{work.category}</span>
-                  <h4 className="text-sm font-bold text-slate-900 mt-0.5">{work.title}</h4>
+              <div
+                key={work.title}
+                className="w-[70vw] max-w-[250px] sm:w-auto sm:max-w-none shrink-0 snap-center bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-soft group hover:shadow-card transition-all flex flex-col justify-between"
+              >
+                <div>
+                  <div className="relative h-36 sm:h-44 overflow-hidden">
+                    <img src={work.img} alt={work.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                    <span className="absolute top-2.5 left-2.5 bg-navy-950/80 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-0.5 rounded-md">
+                      {work.grade}
+                    </span>
+                  </div>
+                  <div className="p-3.5 sm:p-4">
+                    <span className="text-[10px] sm:text-[11px] font-semibold text-brand-600 uppercase tracking-wider">{work.category}</span>
+                    <h4 className="text-xs sm:text-sm font-bold text-slate-900 mt-0.5">{work.title}</h4>
+                  </div>
                 </div>
               </div>
             ))}
+          </div>
+          {/* Mobile swipe indicator */}
+          <div className="flex sm:hidden items-center justify-center gap-1.5 mt-2.5 text-[11px] text-slate-400 font-medium">
+            <span>← Swipe to see student projects →</span>
           </div>
         </div>
       </section>

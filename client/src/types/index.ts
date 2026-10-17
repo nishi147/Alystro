@@ -49,16 +49,19 @@ export interface School {
 }
 
 export interface Program {
-  _id: string;
+  _id?: string;
+  id?: string;
   name: string;
   slug: string;
-  gradeLevel: 'CLASS_6_8' | 'CLASS_9_10' | 'CLASS_11_12';
-  category: string;
+  gradeLevel: 'CLASS_6_8' | 'CLASS_9_10' | 'CLASS_11_12' | string;
+  category?: string;
   tagline: string;
   description: string;
   durationMonths: number;
   sessionDurationMinutes: number;
-  mode: 'ONLINE' | 'OFFLINE' | 'HYBRID';
+  mode: 'ONLINE' | 'OFFLINE' | 'HYBRID' | string;
+  schedule?: string;
+  status?: string;
   features: string[];
   learningOutcomes: string[];
   syllabus: {
@@ -68,8 +71,9 @@ export interface Program {
     topics: string[];
   }[];
   banner?: string;
-  featured: boolean;
-  published: boolean;
+  badge?: string;
+  featured?: boolean;
+  published?: boolean;
 }
 
 export interface Batch {

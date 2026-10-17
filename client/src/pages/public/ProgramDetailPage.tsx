@@ -219,6 +219,14 @@ export const ProgramDetailPage: React.FC = () => {
     },
   };
 
+  const formatGradeLevel = (gl?: string) => {
+    if (!gl) return '';
+    if (gl === 'CLASS_6_8' || gl === 'CLASS_6_7') return 'Classes 6–7';
+    if (gl === 'CLASS_8_10' || gl === 'CLASS_9_10') return 'Classes 8–10';
+    if (gl === 'CLASS_11_12') return 'Classes 11–12';
+    return gl.replace('CLASS_', 'Classes ').replace('_', '–');
+  };
+
   useEffect(() => {
     async function loadProgram() {
       try {
@@ -235,6 +243,12 @@ export const ProgramDetailPage: React.FC = () => {
       // Check fallback data
       if (slug && fallbackPrograms[slug]) {
         setProgram(fallbackPrograms[slug]);
+      } else if (slug?.includes('6-8') || slug?.includes('6-7')) {
+        setProgram(fallbackPrograms['classes-6-7']);
+      } else if (slug?.includes('8-10') || slug?.includes('9-10')) {
+        setProgram(fallbackPrograms['classes-8-10']);
+      } else if (slug?.includes('11-12')) {
+        setProgram(fallbackPrograms['classes-11-12']);
       }
       setIsLoading(false);
     }
@@ -272,7 +286,7 @@ export const ProgramDetailPage: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             <div className="lg:col-span-7">
               <Badge variant="primary" className="mb-3">
-                {program.gradeLevel.replace('_', ' ')}
+                {formatGradeLevel(program.gradeLevel)}
               </Badge>
               <h1 className="text-3xl sm:text-4xl font-extrabold text-navy-950 font-display mb-2">
                 {program.name}
@@ -371,7 +385,7 @@ export const ProgramDetailPage: React.FC = () => {
               </p>
               <h4 className="text-base font-bold text-navy-950 mb-2">Who Is It For?</h4>
               <p className="text-sm text-slate-600 leading-relaxed">
-                Students of {program.gradeLevel.replace('CLASS_', 'Class ').replace('_', '–')} eager to
+                Students of {formatGradeLevel(program.gradeLevel)} eager to
                 build real digital skills and creative confidence.
               </p>
             </div>

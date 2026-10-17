@@ -194,12 +194,12 @@ export const ProgramsPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Programs Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-24">
+        {/* Programs Cards Grid (Swipeable on mobile, Grid on desktop) */}
+        <div className="flex md:grid md:grid-cols-3 gap-4 md:gap-8 overflow-x-auto md:overflow-visible snap-x snap-mandatory pb-4 md:pb-0 -mx-4 px-4 md:mx-0 md:px-0 no-scrollbar mb-8 md:mb-24">
           {filteredStaticPrograms.map((prog) => (
             <div
               key={prog.grade}
-              className={`bg-white rounded-2xl overflow-hidden border shadow-soft hover:shadow-card hover:-translate-y-1 transition-all flex flex-col justify-between ${prog.color}`}
+              className={`w-[85vw] max-w-[330px] md:w-auto md:max-w-none shrink-0 snap-center bg-white rounded-2xl overflow-hidden border shadow-soft hover:shadow-card hover:-translate-y-1 transition-all flex flex-col justify-between ${prog.color}`}
             >
               <div>
                 <div className="h-48 relative overflow-hidden">
@@ -256,6 +256,10 @@ export const ProgramsPage: React.FC = () => {
               </div>
             </div>
           ))}
+        </div>
+        {/* Mobile Swipe Hint */}
+        <div className="flex md:hidden items-center justify-center gap-1.5 -mt-4 mb-10 text-[11px] text-slate-400 font-medium">
+          <span>← Swipe to explore 3 class levels →</span>
         </div>
 
         {/* Compare Programs Table */}
