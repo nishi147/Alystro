@@ -240,7 +240,7 @@ export async function updateMyTeacherProfile(req: AuthenticatedRequest, res: Res
 export async function getMyTeacherBatches(req: AuthenticatedRequest, res: Response): Promise<void> {
   try {
     const batches = await Batch.find({ teacher: req.user?.userId })
-      .populate('program', 'name category durationMonths mode googleClassroomUrl googleClassroomCode')
+      .populate('program', 'name category durationMonths mode')
       .populate('school', 'name code')
       .sort({ createdAt: -1 });
 
@@ -253,66 +253,6 @@ export async function getMyTeacherBatches(req: AuthenticatedRequest, res: Respon
     );
 
     res.json({ success: true, data: enriched });
-  } catch (error: any) {
-    res.status(500).json({ success: false, message: error.message });
-  }
-}
-
-// ─── PUT /teachers/me/batches/:batchId/classroom ──────────────────────────────
-export async function updateMyTeacherBatchClassroom(req: AuthenticatedRequest, res: Response): Promise<void> {
-  try {
-    const { batchId } = req.params;
-    const { googleClassroomUrl, googleClassroomCode, meetingLink } = req.body;
-
-    const batch = await Batch.findById(batchId);
-    if (!batch) {
-      res.status(404).json({ success: false, message: 'Batch not found.' });
-      return;
-    }
-
-    // Access control: verify teacher is assigned to this batch
-    const isAssigned =
-      batch.teacher?.toString() === req.user?.userId ||
-      (await Teacher.exists({ user: req.user?.userId, assignedBatches: batch._id }));
-
-    if (!isAssigned) {
-      res.status(403).json({ success: false, message: 'Forbidden. You are not assigned to manage this batch.' });
-      return;
-    }
-
-    if (googleClassroomUrl !== undefined) {
-      if (googleClassroomUrl && googleClassroomUrl.trim() !== '') {
-        const check = validateClassroomUrl(googleClassroomUrl);
-        if (!check.isValid) {
-          res.status(400).json({ success: false, message: check.error || 'Invalid Google Classroom URL.' });
-          return;
-        }
-        batch.googleClassroomUrl = googleClassroomUrl.trim();
-        // Also keep meetingLink in sync
-        batch.meetingLink = meetingLink?.trim() || googleClassroomUrl.trim();
-      } else {
-        batch.googleClassroomUrl = undefined;
-        if (meetingLink) batch.meetingLink = meetingLink.trim();
-      }
-    }
-
-    if (googleClassroomCode !== undefined) {
-      batch.googleClassroomCode = googleClassroomCode?.trim() || undefined;
-    }
-
-    await batch.save();
-
-    const populated = await Batch.findById(batch._id)
-      .populate('program', 'name category durationMonths mode googleClassroomUrl googleClassroomCode')
-      .populate('school', 'name code');
-
-    const studentCount = await Student.countDocuments({ batch: batch._id });
-
-    res.json({
-      success: true,
-      message: 'Google Classroom link saved successfully for batch.',
-      data: { ...populated?.toObject(), studentCount },
-    });
   } catch (error: any) {
     res.status(500).json({ success: false, message: error.message });
   }

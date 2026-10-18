@@ -88,8 +88,8 @@ export const ContactPage: React.FC = () => {
                   </div>
                   <div>
                     <strong className="block text-slate-900 font-semibold">Call Us:</strong>
-                    <a href="tel:+919876543210" className="hover:text-brand-600 transition">
-                      +91 98765 43210
+                    <a href="tel:+919352906921" className="hover:text-brand-600 transition">
+                      +91 93529 06921
                     </a>
                   </div>
                 </li>
@@ -110,7 +110,7 @@ export const ContactPage: React.FC = () => {
                   </div>
                   <div>
                     <strong className="block text-slate-900 font-semibold">WhatsApp:</strong>
-                    <a href="https://wa.me/919876543210" target="_blank" rel="noreferrer" className="hover:text-emerald-600 transition">
+                    <a href="https://wa.me/919256869651" target="_blank" rel="noreferrer" className="hover:text-emerald-600 transition">
                       Chat with Academic Desk
                     </a>
                   </div>

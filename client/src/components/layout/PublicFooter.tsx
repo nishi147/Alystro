@@ -103,8 +103,8 @@ export const PublicFooter: React.FC = () => {
               </li>
               <li className="flex items-center gap-2.5">
                 <Phone className="w-4 h-4 text-brand-400 shrink-0" />
-                <a href="tel:+919876543210" className="hover:text-white transition">
-                  +91 98765 43210
+                <a href="tel:+919352906921" className="hover:text-white transition">
+                  +91 93529 06921
                 </a>
               </li>
               <li className="flex items-center gap-2.5">
