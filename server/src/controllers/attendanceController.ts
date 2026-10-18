@@ -127,7 +127,7 @@ export async function getStudentAttendanceSummary(req: AuthenticatedRequest, res
 
     const totalSessions = history.length;
     const presentSessions = history.filter((h) => h.status === 'PRESENT' || h.status === 'LATE').length;
-    const rate = totalSessions > 0 ? Math.round((presentSessions / totalSessions) * 100) : 100;
+    const rate = totalSessions > 0 ? Math.round((presentSessions / totalSessions) * 100) : 0;
 
     res.json({
       success: true,
@@ -136,6 +136,7 @@ export async function getStudentAttendanceSummary(req: AuthenticatedRequest, res
         presentSessions,
         absentSessions: totalSessions - presentSessions,
         attendanceRate: rate,
+        hasSessions: totalSessions > 0,
         history,
       },
     });

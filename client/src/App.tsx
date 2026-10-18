@@ -165,7 +165,111 @@ const AppContent: React.FC = () => {
           path="/school"
           element={
             <ProtectedRoute allowedRoles={['SCHOOL_ADMIN', 'SUPER_ADMIN']}>
-              <SchoolAdminDashboard />
+              <SchoolAdminDashboard defaultTab="students" />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/school/students"
+          element={
+            <ProtectedRoute allowedRoles={['SCHOOL_ADMIN', 'SUPER_ADMIN']}>
+              <SchoolAdminDashboard defaultTab="students" />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/school/bulk-import"
+          element={
+            <ProtectedRoute allowedRoles={['SCHOOL_ADMIN', 'SUPER_ADMIN']}>
+              <SchoolAdminDashboard defaultTab="bulk-import" />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/school/classes"
+          element={
+            <ProtectedRoute allowedRoles={['SCHOOL_ADMIN', 'SUPER_ADMIN']}>
+              <SchoolAdminDashboard defaultTab="classes" />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/school/batches"
+          element={
+            <ProtectedRoute allowedRoles={['SCHOOL_ADMIN', 'SUPER_ADMIN']}>
+              <SchoolAdminDashboard defaultTab="batches" />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/school/teachers"
+          element={
+            <ProtectedRoute allowedRoles={['SCHOOL_ADMIN', 'SUPER_ADMIN']}>
+              <SchoolAdminDashboard defaultTab="teachers" />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/school/attendance"
+          element={
+            <ProtectedRoute allowedRoles={['SCHOOL_ADMIN', 'SUPER_ADMIN']}>
+              <SchoolAdminDashboard defaultTab="attendance" />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/school/assignments"
+          element={
+            <ProtectedRoute allowedRoles={['SCHOOL_ADMIN', 'SUPER_ADMIN']}>
+              <SchoolAdminDashboard defaultTab="assignments" />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/school/tests"
+          element={
+            <ProtectedRoute allowedRoles={['SCHOOL_ADMIN', 'SUPER_ADMIN']}>
+              <SchoolAdminDashboard defaultTab="tests" />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/school/progress"
+          element={
+            <ProtectedRoute allowedRoles={['SCHOOL_ADMIN', 'SUPER_ADMIN']}>
+              <SchoolAdminDashboard defaultTab="progress" />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/school/certificates"
+          element={
+            <ProtectedRoute allowedRoles={['SCHOOL_ADMIN', 'SUPER_ADMIN']}>
+              <SchoolAdminDashboard defaultTab="certificates" />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/school/reports"
+          element={
+            <ProtectedRoute allowedRoles={['SCHOOL_ADMIN', 'SUPER_ADMIN']}>
+              <SchoolAdminDashboard defaultTab="reports" />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/school/notices"
+          element={
+            <ProtectedRoute allowedRoles={['SCHOOL_ADMIN', 'SUPER_ADMIN']}>
+              <SchoolAdminDashboard defaultTab="notices" />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/school/affiliations"
+          element={
+            <ProtectedRoute allowedRoles={['SCHOOL_ADMIN', 'SUPER_ADMIN']}>
+              <SchoolAdminDashboard defaultTab="affiliations" />
             </ProtectedRoute>
           }
         />
@@ -177,69 +281,37 @@ const AppContent: React.FC = () => {
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/school/students"
-          element={
-            <ProtectedRoute allowedRoles={['SCHOOL_ADMIN', 'SUPER_ADMIN']}>
-              <SchoolAdminDashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/school/teachers"
-          element={
-            <ProtectedRoute allowedRoles={['SCHOOL_ADMIN', 'SUPER_ADMIN']}>
-              <SchoolAdminDashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/school/batches"
-          element={
-            <ProtectedRoute allowedRoles={['SCHOOL_ADMIN', 'SUPER_ADMIN']}>
-              <SchoolAdminDashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/school/attendance"
-          element={
-            <ProtectedRoute allowedRoles={['SCHOOL_ADMIN', 'SUPER_ADMIN']}>
-              <TeacherDashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/school/certificates"
-          element={
-            <ProtectedRoute allowedRoles={['SCHOOL_ADMIN', 'SUPER_ADMIN']}>
-              <AdminCertificatesPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/school/notices"
-          element={
-            <ProtectedRoute allowedRoles={['SCHOOL_ADMIN', 'SUPER_ADMIN']}>
-              <SchoolAdminDashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/school/notices"
-          element={
-            <ProtectedRoute allowedRoles={['SCHOOL_ADMIN', 'SUPER_ADMIN']}>
-              <SchoolAdminDashboard />
-            </ProtectedRoute>
-          }
-        />
 
         {/* Teacher Routes */}
         <Route
           path="/teacher"
           element={
             <ProtectedRoute allowedRoles={['TEACHER', 'SUPER_ADMIN']}>
-              <TeacherDashboard />
+              <TeacherDashboard defaultTab="overview" />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/teacher/batches"
+          element={
+            <ProtectedRoute allowedRoles={['TEACHER', 'SUPER_ADMIN']}>
+              <TeacherDashboard defaultTab="batches" />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/teacher/students"
+          element={
+            <ProtectedRoute allowedRoles={['TEACHER', 'SUPER_ADMIN']}>
+              <TeacherDashboard defaultTab="students" />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/teacher/classes"
+          element={
+            <ProtectedRoute allowedRoles={['TEACHER', 'SUPER_ADMIN']}>
+              <TeacherDashboard defaultTab="classes" />
             </ProtectedRoute>
           }
         />
@@ -247,7 +319,15 @@ const AppContent: React.FC = () => {
           path="/teacher/attendance"
           element={
             <ProtectedRoute allowedRoles={['TEACHER', 'SUPER_ADMIN']}>
-              <TeacherDashboard />
+              <TeacherDashboard defaultTab="attendance" />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/teacher/materials"
+          element={
+            <ProtectedRoute allowedRoles={['TEACHER', 'SUPER_ADMIN']}>
+              <TeacherDashboard defaultTab="materials" />
             </ProtectedRoute>
           }
         />
@@ -255,7 +335,7 @@ const AppContent: React.FC = () => {
           path="/teacher/assignments"
           element={
             <ProtectedRoute allowedRoles={['TEACHER', 'SUPER_ADMIN']}>
-              <TeacherDashboard />
+              <TeacherDashboard defaultTab="assignments" />
             </ProtectedRoute>
           }
         />
@@ -263,7 +343,39 @@ const AppContent: React.FC = () => {
           path="/teacher/quizzes"
           element={
             <ProtectedRoute allowedRoles={['TEACHER', 'SUPER_ADMIN']}>
-              <TeacherDashboard />
+              <TeacherDashboard defaultTab="quizzes" />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/teacher/marks"
+          element={
+            <ProtectedRoute allowedRoles={['TEACHER', 'SUPER_ADMIN']}>
+              <TeacherDashboard defaultTab="marks" />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/teacher/progress"
+          element={
+            <ProtectedRoute allowedRoles={['TEACHER', 'SUPER_ADMIN']}>
+              <TeacherDashboard defaultTab="progress" />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/teacher/remarks"
+          element={
+            <ProtectedRoute allowedRoles={['TEACHER', 'SUPER_ADMIN']}>
+              <TeacherDashboard defaultTab="remarks" />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/teacher/reports"
+          element={
+            <ProtectedRoute allowedRoles={['TEACHER', 'SUPER_ADMIN']}>
+              <TeacherDashboard defaultTab="reports" />
             </ProtectedRoute>
           }
         />
@@ -273,7 +385,31 @@ const AppContent: React.FC = () => {
           path="/student"
           element={
             <ProtectedRoute allowedRoles={['STUDENT', 'SUPER_ADMIN']}>
-              <StudentDashboard />
+              <StudentDashboard defaultTab="overview" />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/student/course"
+          element={
+            <ProtectedRoute allowedRoles={['STUDENT', 'SUPER_ADMIN']}>
+              <StudentDashboard defaultTab="course" />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/student/batch"
+          element={
+            <ProtectedRoute allowedRoles={['STUDENT', 'SUPER_ADMIN']}>
+              <StudentDashboard defaultTab="batch" />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/student/live-classes"
+          element={
+            <ProtectedRoute allowedRoles={['STUDENT', 'SUPER_ADMIN']}>
+              <StudentDashboard defaultTab="live-classes" />
             </ProtectedRoute>
           }
         />
@@ -281,7 +417,23 @@ const AppContent: React.FC = () => {
           path="/student/schedule"
           element={
             <ProtectedRoute allowedRoles={['STUDENT', 'SUPER_ADMIN']}>
-              <StudentDashboard />
+              <StudentDashboard defaultTab="schedule" />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/student/recordings"
+          element={
+            <ProtectedRoute allowedRoles={['STUDENT', 'SUPER_ADMIN']}>
+              <StudentDashboard defaultTab="recordings" />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/student/materials"
+          element={
+            <ProtectedRoute allowedRoles={['STUDENT', 'SUPER_ADMIN']}>
+              <StudentDashboard defaultTab="materials" />
             </ProtectedRoute>
           }
         />
@@ -289,7 +441,7 @@ const AppContent: React.FC = () => {
           path="/student/assignments"
           element={
             <ProtectedRoute allowedRoles={['STUDENT', 'SUPER_ADMIN']}>
-              <StudentDashboard />
+              <StudentDashboard defaultTab="assignments" />
             </ProtectedRoute>
           }
         />
@@ -297,7 +449,39 @@ const AppContent: React.FC = () => {
           path="/student/quizzes"
           element={
             <ProtectedRoute allowedRoles={['STUDENT', 'SUPER_ADMIN']}>
-              <StudentDashboard />
+              <StudentDashboard defaultTab="quizzes" />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/student/marks"
+          element={
+            <ProtectedRoute allowedRoles={['STUDENT', 'SUPER_ADMIN']}>
+              <StudentDashboard defaultTab="marks" />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/student/attendance"
+          element={
+            <ProtectedRoute allowedRoles={['STUDENT', 'SUPER_ADMIN']}>
+              <StudentDashboard defaultTab="attendance" />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/student/progress"
+          element={
+            <ProtectedRoute allowedRoles={['STUDENT', 'SUPER_ADMIN']}>
+              <StudentDashboard defaultTab="progress" />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/student/projects"
+          element={
+            <ProtectedRoute allowedRoles={['STUDENT', 'SUPER_ADMIN']}>
+              <StudentDashboard defaultTab="projects" />
             </ProtectedRoute>
           }
         />
@@ -305,7 +489,15 @@ const AppContent: React.FC = () => {
           path="/student/certificates"
           element={
             <ProtectedRoute allowedRoles={['STUDENT', 'SUPER_ADMIN']}>
-              <StudentDashboard />
+              <StudentDashboard defaultTab="certificates" />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/student/profile"
+          element={
+            <ProtectedRoute allowedRoles={['STUDENT', 'SUPER_ADMIN']}>
+              <StudentDashboard defaultTab="profile" />
             </ProtectedRoute>
           }
         />

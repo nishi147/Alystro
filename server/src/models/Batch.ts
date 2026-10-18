@@ -13,6 +13,8 @@ export interface IBatch extends Document {
     endTime: string;   // "16:45"
   }[];
   meetingLink?: string;
+  googleClassroomUrl?: string;
+  googleClassroomCode?: string;
   classroomNumber?: string;
   status: 'UPCOMING' | 'ACTIVE' | 'COMPLETED' | 'CANCELLED';
   startDate: Date;
@@ -38,7 +40,9 @@ const BatchSchema = new Schema<IBatch>(
         endTime: { type: String, required: true },
       },
     ],
-    meetingLink: { type: String, default: 'https://meet.google.com/aly-live-demo' },
+    meetingLink: { type: String, trim: true },
+    googleClassroomUrl: { type: String, trim: true },
+    googleClassroomCode: { type: String, trim: true },
     classroomNumber: { type: String },
     status: {
       type: String,

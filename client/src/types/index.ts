@@ -159,6 +159,8 @@ export interface Program {
   badge?: string;
   featured?: boolean;
   published?: boolean;
+  googleClassroomUrl?: string;
+  googleClassroomCode?: string;
 }
 
 export interface Batch {
@@ -175,6 +177,8 @@ export interface Batch {
     endTime: string;
   }[];
   meetingLink?: string;
+  googleClassroomUrl?: string;
+  googleClassroomCode?: string;
   classroomNumber?: string;
   status: 'UPCOMING' | 'ACTIVE' | 'COMPLETED' | 'CANCELLED';
   maxStudents: number;
@@ -195,6 +199,8 @@ export interface Student {
   program?: Program;
   parentName?: string;
   parentPhone?: string;
+  parentEmail?: string;
+  enrolledAt?: string;
   attendanceRate: number;
   completedAssignments: number;
   totalScore: number;

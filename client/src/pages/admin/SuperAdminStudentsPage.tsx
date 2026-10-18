@@ -63,7 +63,7 @@ export const SuperAdminStudentsPage: React.FC = () => {
       Email: s.email,
       Grade: s.grade,
       Section: s.section,
-      School: typeof s.school === 'object' ? s.school?.name : 'Partner School',
+      School: typeof s.school === 'object' && s.school?.name ? s.school.name : (s.school ? String(s.school) : 'Direct Enrollment'),
       'Parent Contact': s.parentPhone || '',
       Status: s.status,
     }));
@@ -160,7 +160,9 @@ export const SuperAdminStudentsPage: React.FC = () => {
               ) : (
                 filteredStudents.map((stu) => {
                   const schoolName =
-                    typeof stu.school === 'object' ? stu.school?.name : 'Partner School';
+                    typeof stu.school === 'object' && stu.school?.name
+                      ? stu.school.name
+                      : (stu.school ? String(stu.school) : 'Direct Enrollment');
                   return (
                     <tr key={stu._id} className="hover:bg-slate-50/60 transition">
                       <td className="py-4 px-6">

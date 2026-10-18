@@ -101,6 +101,26 @@ export async function getSchoolById(req: Request, res: Response): Promise<void> 
   }
 }
 
+export async function getMySchoolProfile(req: AuthenticatedRequest, res: Response): Promise<void> {
+  try {
+    const schoolId = req.schoolId || (req.user as any)?.school;
+    if (!schoolId) {
+      res.status(400).json({ success: false, message: 'No school associated with user.' });
+      return;
+    }
+    const school = await School.findById(schoolId)
+      .select('-commercialTerms')
+      .populate('programsEnrolled');
+    if (!school) {
+      res.status(404).json({ success: false, message: 'School not found.' });
+      return;
+    }
+    res.json({ success: true, data: school });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+}
+
 export async function createSchool(req: AuthenticatedRequest, res: Response): Promise<void> {
   let createdSchool: any = null;
   try {
@@ -308,6 +328,57 @@ export async function deleteSchool(req: AuthenticatedRequest, res: Response): Pr
     });
 
     res.json({ success: true, message: 'School archived and associated users suspended.' });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+}
+
+export async function addSchoolClass(req: AuthenticatedRequest, res: Response): Promise<void> {
+  try {
+    const schoolId = req.params.id || req.schoolId;
+    const { className } = req.body;
+    if (!className || typeof className !== 'string' || !className.trim()) {
+      res.status(400).json({ success: false, message: 'Class name is required.' });
+      return;
+    }
+
+    const school = await School.findById(schoolId);
+    if (!school) {
+      res.status(404).json({ success: false, message: 'School not found.' });
+      return;
+    }
+
+    const trimmed = className.trim();
+    if (!school.classesServed.includes(trimmed)) {
+      school.classesServed.push(trimmed);
+      await school.save();
+    }
+
+    res.json({ success: true, message: `Class "${trimmed}" added successfully.`, data: school.classesServed });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+}
+
+export async function removeSchoolClass(req: AuthenticatedRequest, res: Response): Promise<void> {
+  try {
+    const schoolId = req.params.id || req.schoolId;
+    const { className } = req.body;
+    if (!className) {
+      res.status(400).json({ success: false, message: 'Class name is required.' });
+      return;
+    }
+
+    const school = await School.findById(schoolId);
+    if (!school) {
+      res.status(404).json({ success: false, message: 'School not found.' });
+      return;
+    }
+
+    school.classesServed = school.classesServed.filter((c) => c !== className);
+    await school.save();
+
+    res.json({ success: true, message: `Class "${className}" removed successfully.`, data: school.classesServed });
   } catch (error: any) {
     res.status(500).json({ success: false, message: error.message });
   }

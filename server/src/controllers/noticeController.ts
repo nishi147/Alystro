@@ -50,3 +50,26 @@ export async function createNotice(req: AuthenticatedRequest, res: Response): Pr
     res.status(500).json({ success: false, message: error.message });
   }
 }
+
+export async function deleteNotice(req: AuthenticatedRequest, res: Response): Promise<void> {
+  try {
+    const notice = await Notice.findById(req.params.id);
+    if (!notice) {
+      res.status(404).json({ success: false, message: 'Notice not found.' });
+      return;
+    }
+
+    if (
+      ['SCHOOL_ADMIN'].includes(req.user?.role || '') &&
+      notice.school.toString() !== req.schoolId?.toString()
+    ) {
+      res.status(403).json({ success: false, message: 'Forbidden: Cross-tenant removal denied.' });
+      return;
+    }
+
+    await Notice.findByIdAndDelete(notice._id);
+    res.json({ success: true, message: 'Notice removed successfully.' });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+}

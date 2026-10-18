@@ -33,8 +33,16 @@ export async function getQuizzes(req: AuthenticatedRequest, res: Response): Prom
 
         formatted = quizzes.map((q: any) => {
           const resObj = resMap.get(q._id.toString());
+          const qObj = q.toObject();
+          // Security: strip answer key for students
+          if (Array.isArray(qObj.questions)) {
+            qObj.questions = qObj.questions.map((quest: any) => {
+              const { correctOptionIndex, explanation, ...safeQuest } = quest;
+              return safeQuest;
+            });
+          }
           return {
-            ...q.toObject(),
+            ...qObj,
             userResult: resObj || null,
           };
         });
@@ -58,7 +66,15 @@ export async function getQuizById(req: AuthenticatedRequest, res: Response): Pro
       return;
     }
 
-    res.json({ success: true, data: quiz });
+    const qObj = quiz.toObject();
+    if (req.user?.role === 'STUDENT' && Array.isArray(qObj.questions)) {
+      qObj.questions = qObj.questions.map((quest: any) => {
+        const { correctOptionIndex, explanation, ...safeQuest } = quest;
+        return safeQuest;
+      });
+    }
+
+    res.json({ success: true, data: qObj });
   } catch (error: any) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -117,6 +133,107 @@ export async function attemptQuiz(req: AuthenticatedRequest, res: Response): Pro
       message: passed ? 'Congratulations! You passed the quiz.' : 'Quiz completed. Keep practicing!',
       data: result,
     });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+}
+
+export async function createQuiz(req: AuthenticatedRequest, res: Response): Promise<void> {
+  try {
+    const { batchId, programId, title, description, durationMinutes, passingScore, questions, status } = req.body;
+    const schoolId = req.schoolId;
+
+    if (!schoolId) {
+      res.status(400).json({ success: false, message: 'School identifier is required.' });
+      return;
+    }
+
+    if (!title || !batchId) {
+      res.status(400).json({ success: false, message: 'Test title and batch are required.' });
+      return;
+    }
+
+    const defaultQuestions = questions && Array.isArray(questions) && questions.length > 0 ? questions : [
+      {
+        questionText: 'What does AI stand for in modern computing?',
+        options: ['Artificial Intelligence', 'Automated Interface', 'Advanced Internet', 'Action Index'],
+        correctOptionIndex: 0,
+        explanation: 'AI stands for Artificial Intelligence.',
+        marks: 10,
+      },
+      {
+        questionText: 'Which Python library is standard for data analysis?',
+        options: ['pandas', 'django', 'flask', 'css'],
+        correctOptionIndex: 0,
+        explanation: 'pandas is the standard data manipulation library in Python.',
+        marks: 10,
+      },
+    ];
+
+    const quiz = await Quiz.create({
+      school: schoolId,
+      batch: batchId,
+      program: programId,
+      title: title.trim(),
+      description: description || 'Official institutional practice test & assessment',
+      durationMinutes: Number(durationMinutes) || 20,
+      passingScore: Number(passingScore) || 60,
+      questions: defaultQuestions,
+      status: status || 'PUBLISHED',
+    });
+
+    res.status(201).json({ success: true, message: 'Test/Quiz created successfully.', data: quiz });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+}
+
+export async function getQuizResults(req: AuthenticatedRequest, res: Response): Promise<void> {
+  try {
+    const { id } = req.params;
+    const query: any = {};
+    if (id) query.quiz = id;
+
+    if (['SCHOOL_ADMIN', 'TEACHER'].includes(req.user?.role || '')) {
+      query.school = req.schoolId;
+    } else if (req.query.schoolId) {
+      query.school = req.query.schoolId;
+    }
+
+    const results = await Result.find(query)
+      .populate({
+        path: 'student',
+        populate: [{ path: 'user', select: 'name email phone avatar' }, { path: 'school', select: 'name' }],
+      })
+      .populate('quiz', 'title totalMarks passingScore')
+      .sort({ completedAt: -1 });
+
+    res.json({ success: true, data: results });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+}
+
+export async function deleteQuiz(req: AuthenticatedRequest, res: Response): Promise<void> {
+  try {
+    const quiz = await Quiz.findById(req.params.id);
+    if (!quiz) {
+      res.status(404).json({ success: false, message: 'Quiz not found.' });
+      return;
+    }
+
+    if (
+      ['SCHOOL_ADMIN', 'TEACHER'].includes(req.user?.role || '') &&
+      quiz.school.toString() !== req.schoolId?.toString()
+    ) {
+      res.status(403).json({ success: false, message: 'Forbidden: Cross-tenant removal denied.' });
+      return;
+    }
+
+    await Quiz.findByIdAndDelete(quiz._id);
+    await Result.deleteMany({ quiz: quiz._id });
+
+    res.json({ success: true, message: 'Test/Assessment removed successfully.' });
   } catch (error: any) {
     res.status(500).json({ success: false, message: error.message });
   }

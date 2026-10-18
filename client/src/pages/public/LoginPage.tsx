@@ -29,12 +29,6 @@ export const LoginPage: React.FC = () => {
     }
   };
 
-  const fillQuickCreds = (userEmail: string, userPass: string) => {
-    setEmail(userEmail);
-    setPassword(userPass);
-    setErrorMessage('');
-  };
-
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
@@ -107,28 +101,6 @@ export const LoginPage: React.FC = () => {
             </div>
           </form>
 
-          {/* Seed / Demo Accounts Note */}
-          <div className="mt-8 pt-6 border-t border-slate-100">
-            <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-3 text-center">
-              Demo / Test Account Access
-            </p>
-            <div className="space-y-2 text-xs text-slate-500">
-              <p>
-                If you were provided demo credentials by ALYSTRO, use them above. The platform Super Admin account is:
-              </p>
-              <button
-                type="button"
-                onClick={() => fillQuickCreds('superadmin@alystro.com', 'Admin@123')}
-                className="w-full p-2.5 rounded-xl border border-purple-200 bg-purple-50 hover:bg-purple-100 text-purple-900 font-semibold text-left transition text-xs"
-              >
-                <span className="block text-[10px] text-purple-500 uppercase mb-0.5">Super Admin — Click to fill</span>
-                superadmin@alystro.com
-              </button>
-              <p className="text-[11px] text-slate-400 text-center pt-1">
-                Other roles? Register a new account or contact your school administrator.
-              </p>
-            </div>
-          </div>
         </div>
 
         <p className="text-center text-xs text-slate-400 mt-6">

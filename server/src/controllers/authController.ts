@@ -3,6 +3,7 @@ import { User } from '../models/User.js';
 import { School } from '../models/School.js';
 import { SchoolApplication } from '../models/SchoolApplication.js';
 import { AffiliationRequest } from '../models/AffiliationRequest.js';
+import { Student } from '../models/Student.js';
 import { AuditLog } from '../models/AuditLog.js';
 import { comparePassword, hashPassword } from '../utils/password.js';
 import { signToken } from '../utils/jwt.js';
@@ -531,8 +532,8 @@ export async function registerStudent(req: Request, res: Response): Promise<void
       role: 'STUDENT',
       phone: phone ? phone.trim() : undefined,
       school: linkedSchool ? linkedSchool._id : undefined,
-      schoolAffiliationStatus: 'PENDING',
-      status: 'PENDING_APPROVAL',
+      schoolAffiliationStatus: linkedSchool ? 'APPROVED' : 'PENDING',
+      status: 'ACTIVE',
       proposedSchoolName: isUnlistedSchool ? unlistedSchoolName.trim() : undefined,
       proposedSchoolCity: isUnlistedSchool ? unlistedSchoolCity.trim() : undefined,
       proposedSchoolState: isUnlistedSchool ? unlistedSchoolState.trim() : undefined,
@@ -556,7 +557,32 @@ export async function registerStudent(req: Request, res: Response): Promise<void
         parentPhone: parentPhone ? parentPhone.trim() : undefined,
         enrollmentCode: enrollmentCode ? enrollmentCode.trim() : undefined,
       },
-      status: 'PENDING',
+      status: linkedSchool ? 'APPROVED' : 'PENDING',
+    });
+
+    // Create real Student record in database so student automatically appears in All Students
+    let effectiveSchoolId = linkedSchool ? linkedSchool._id : undefined;
+    if (!effectiveSchoolId) {
+      const defaultSchool = await School.findOne({ status: 'ACTIVE' });
+      effectiveSchoolId = defaultSchool?._id;
+    }
+
+    const studentCount = await Student.countDocuments();
+    const cleanPrefix = linkedSchool?.code
+      ? linkedSchool.code.replace(/[^A-Z0-9]/g, '').slice(0, 4)
+      : 'ALY';
+    const rollNumber = `${cleanPrefix}-${1000 + studentCount + 1}`;
+
+    await Student.create({
+      user: user._id,
+      school: effectiveSchoolId,
+      rollNumber,
+      grade: grade.trim() || 'Class 8',
+      section: 'A',
+      parentName: parentName ? parentName.trim() : undefined,
+      parentPhone: parentPhone ? parentPhone.trim() : undefined,
+      status: 'ACTIVE',
+      enrolledAt: new Date(),
     });
 
     const token = signToken({
@@ -576,7 +602,7 @@ export async function registerStudent(req: Request, res: Response): Promise<void
 
     res.status(201).json({
       success: true,
-      message: 'Student registration submitted. Your school enrollment is pending approval.',
+      message: 'Student registration completed successfully. Welcome to ALYSTRO!',
       data: {
         token,
         user: {
@@ -588,7 +614,7 @@ export async function registerStudent(req: Request, res: Response): Promise<void
           schoolAffiliationStatus: user.schoolAffiliationStatus,
         },
         affiliationId: affiliation._id,
-        dashboardPath: '/application-status',
+        dashboardPath: '/student',
       },
     });
   } catch (error: any) {

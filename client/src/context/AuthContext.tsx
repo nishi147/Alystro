@@ -9,7 +9,6 @@ interface AuthContextType {
   isLoading: boolean;
   login: (email: string, password: string) => Promise<{ dashboardPath: string }>;
   logout: () => Promise<void>;
-  switchDemoRole: (role: Role) => Promise<string>;
   refreshUser: () => Promise<void>;
 }
 
@@ -68,24 +67,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  // Quick switcher for demo/testing convenience
-  const switchDemoRole = async (targetRole: Role): Promise<string> => {
-    const credentials: Record<Role, { email: string; pass: string }> = {
-      SUPER_ADMIN: { email: 'superadmin@alystro.com', pass: 'Admin@123' },
-      ADMIN: { email: 'operations@alystro.com', pass: 'Admin@123' },
-      SCHOOL_ADMIN: { email: 'principal@abcschool.edu', pass: 'School@123' },
-      TEACHER: { email: 'mentor.rohit@alystro.com', pass: 'Teacher@123' },
-      STUDENT: { email: 'aarav.sharma@student.alystro.com', pass: 'Student@123' },
-    };
-
-    const cred = credentials[targetRole];
-    if (cred) {
-      const result = await login(cred.email, cred.pass);
-      return result.dashboardPath;
-    }
-    return '/';
-  };
-
   return (
     <AuthContext.Provider
       value={{
@@ -95,7 +76,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isLoading,
         login,
         logout,
-        switchDemoRole,
         refreshUser: fetchCurrentUser,
       }}
     >

@@ -22,6 +22,8 @@ export interface IProgram extends Document {
   badge?: string;
   featured: boolean;
   published: boolean;
+  googleClassroomUrl?: string;
+  googleClassroomCode?: string;
   pricing?: {
     partnerFee: number;
     standardValue: number;
@@ -63,6 +65,8 @@ const ProgramSchema = new Schema<IProgram>(
     badge: { type: String },
     featured: { type: Boolean, default: false },
     published: { type: Boolean, default: true },
+    googleClassroomUrl: { type: String, trim: true },
+    googleClassroomCode: { type: String, trim: true },
     pricing: {
       partnerFee: { type: Number, default: 5000 },
       standardValue: { type: Number, default: 10000 },

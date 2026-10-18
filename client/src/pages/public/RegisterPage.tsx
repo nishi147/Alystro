@@ -194,9 +194,9 @@ export const RegisterPage: React.FC = () => {
       if (res.success && res.data?.token) {
         localStorage.setItem('alystro_token', res.data.token);
         await refreshUser();
-        setSuccessMessage('Student registration submitted! Redirecting to application tracking...');
+        setSuccessMessage('Student registration successful! Redirecting to student dashboard...');
         setTimeout(() => {
-          navigate('/application-status');
+          navigate(res.data?.dashboardPath || '/student');
         }, 1000);
       } else {
         setErrorMessage(res.message || 'Student registration failed.');

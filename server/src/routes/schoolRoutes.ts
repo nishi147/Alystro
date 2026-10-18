@@ -6,6 +6,9 @@ import {
   createSchool,
   updateSchool,
   deleteSchool,
+  addSchoolClass,
+  removeSchoolClass,
+  getMySchoolProfile,
 } from '../controllers/schoolController.js';
 import {
   getPublicSchoolsList,
@@ -39,8 +42,13 @@ router.get('/affiliations/requests', authenticate, authorizeRoles('SCHOOL_ADMIN'
 router.post('/affiliations/:id/approve', authenticate, authorizeRoles('SCHOOL_ADMIN', 'SUPER_ADMIN', 'ADMIN'), approveAffiliation);
 router.post('/affiliations/:id/reject', authenticate, authorizeRoles('SCHOOL_ADMIN', 'SUPER_ADMIN', 'ADMIN'), rejectAffiliation);
 
+// Classes Management
+router.post('/classes/add', authenticate, authorizeRoles('SCHOOL_ADMIN', 'SUPER_ADMIN'), addSchoolClass);
+router.post('/classes/remove', authenticate, authorizeRoles('SCHOOL_ADMIN', 'SUPER_ADMIN'), removeSchoolClass);
+
 // Standard School Management routes
 router.get('/', authenticate, authorizeRoles('SUPER_ADMIN', 'ADMIN'), getSchools);
+router.get('/profile/me', authenticate, enforceTenantIsolation, getMySchoolProfile);
 router.get('/:id', authenticate, enforceTenantIsolation, getSchoolById);
 router.post('/', authenticate, authorizeRoles('SUPER_ADMIN'), createSchool);
 router.put('/:id', authenticate, enforceTenantIsolation, updateSchool);
