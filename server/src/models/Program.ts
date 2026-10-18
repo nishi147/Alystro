@@ -22,6 +22,13 @@ export interface IProgram extends Document {
   badge?: string;
   featured: boolean;
   published: boolean;
+  pricing?: {
+    partnerFee: number;
+    standardValue: number;
+    gstRate: number;
+    currency: string;
+    discountPercent?: number;
+  };
   createdAt: Date;
   updatedAt: Date;
 }
@@ -56,6 +63,13 @@ const ProgramSchema = new Schema<IProgram>(
     badge: { type: String },
     featured: { type: Boolean, default: false },
     published: { type: Boolean, default: true },
+    pricing: {
+      partnerFee: { type: Number, default: 5000 },
+      standardValue: { type: Number, default: 10000 },
+      gstRate: { type: Number, default: 18 },
+      currency: { type: String, default: 'INR' },
+      discountPercent: { type: Number, default: 50 },
+    },
   },
   { timestamps: true }
 );

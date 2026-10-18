@@ -55,10 +55,12 @@ export async function getSchools(req: Request, res: Response): Promise<void> {
 export async function getSchoolBySlug(req: Request, res: Response): Promise<void> {
   try {
     const { slug } = req.params;
-    const school = await School.findOne({ slug: slug.toLowerCase() }).populate(
-      'programsEnrolled',
-      'name slug gradeLevel category description syllabus features'
-    );
+    const school = await School.findOne({ slug: slug.toLowerCase() })
+      .select('-commercialTerms')
+      .populate(
+        'programsEnrolled',
+        'name slug gradeLevel category description syllabus features'
+      );
 
     if (!school) {
       res.status(404).json({ success: false, message: 'School not found.' });
@@ -86,7 +88,9 @@ export async function getSchoolBySlug(req: Request, res: Response): Promise<void
 
 export async function getSchoolById(req: Request, res: Response): Promise<void> {
   try {
-    const school = await School.findById(req.params.id).populate('programsEnrolled');
+    const school = await School.findById(req.params.id)
+      .select('-commercialTerms')
+      .populate('programsEnrolled');
     if (!school) {
       res.status(404).json({ success: false, message: 'School not found.' });
       return;

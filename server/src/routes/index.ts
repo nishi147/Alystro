@@ -14,6 +14,7 @@ import crmRoutes from './crmRoutes.js';
 import cmsRoutes from './cmsRoutes.js';
 import noticeRoutes from './noticeRoutes.js';
 import notificationRoutes from './notificationRoutes.js';
+import pricingRoutes from './pricingRoutes.js';
 
 const apiRouter = Router();
 
@@ -32,5 +33,6 @@ apiRouter.use('/crm', crmRoutes);
 apiRouter.use('/cms', cmsRoutes);
 apiRouter.use('/notices', noticeRoutes);
 apiRouter.use('/notifications', notificationRoutes);
+apiRouter.use('/pricing', pricingRoutes);
 
 export default apiRouter;

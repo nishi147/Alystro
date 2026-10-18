@@ -13,7 +13,9 @@ export async function getPrograms(req: Request, res: Response): Promise<void> {
       query.featured = true;
     }
 
-    const programs = await Program.find(query).sort({ gradeLevel: 1 });
+    const programs = await Program.find(query)
+      .select('-pricing')
+      .sort({ gradeLevel: 1 });
     res.json({ success: true, data: programs });
   } catch (error: any) {
     res.status(500).json({ success: false, message: error.message });
@@ -22,7 +24,7 @@ export async function getPrograms(req: Request, res: Response): Promise<void> {
 
 export async function getProgramBySlug(req: Request, res: Response): Promise<void> {
   try {
-    const program = await Program.findOne({ slug: req.params.slug });
+    const program = await Program.findOne({ slug: req.params.slug }).select('-pricing');
     if (!program) {
       res.status(404).json({ success: false, message: 'Program not found.' });
       return;

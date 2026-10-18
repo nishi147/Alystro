@@ -24,8 +24,6 @@ const staticPrograms = [
       'Digital safety and responsible internet use',
       'Small practical projects & intro to freelancing',
     ],
-    partnerFee: '₹5,000 + 18% GST',
-    standardValue: '₹10,000 + 18% GST',
   },
   {
     grade: 'Classes 8–10',
@@ -43,8 +41,6 @@ const staticPrograms = [
       'Freelancing basics & portfolio concepts',
       'Weekly practical assignments',
     ],
-    partnerFee: '₹7,000 + 18% GST',
-    standardValue: '₹14,000 + 18% GST',
   },
   {
     grade: 'Classes 11–12',
@@ -62,8 +58,6 @@ const staticPrograms = [
       'Freelancing, client communication & project management',
       'Career-focused digital skills',
     ],
-    partnerFee: '₹9,000 + 18% GST',
-    standardValue: '₹18,000 + 18% GST',
   },
 ];
 
@@ -234,17 +228,20 @@ export const ProgramsPage: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Fee Info */}
+                {/* Program Delivery Info */}
                 <div className="px-6 pb-4">
                   <div className="bg-slate-50 rounded-xl p-3 border border-slate-200">
-                    <div className="flex justify-between items-center mb-1">
-                      <span className="text-xs text-slate-500">Partnership Fee</span>
-                      <span className="text-xs font-bold text-brand-600">{prog.partnerFee}</span>
+                    <div className="flex items-center justify-between text-xs font-semibold text-slate-700">
+                      <span className="flex items-center gap-1.5 text-brand-700 font-bold">
+                        <Sparkles className="w-3.5 h-3.5 text-brand-600" /> Hybrid Lab Delivery
+                      </span>
+                      <span className="text-[11px] px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold">
+                        Certificate Included
+                      </span>
                     </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-xs text-slate-400">Standard Value</span>
-                      <span className="text-xs text-slate-400 line-through">{prog.standardValue}</span>
-                    </div>
+                    <p className="text-[11px] text-slate-500 mt-1">
+                      Adaptive school curriculum with live project mentoring & weekly evaluations.
+                    </p>
                   </div>
                 </div>
               </div>

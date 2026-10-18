@@ -69,7 +69,7 @@ export const PublicFooter: React.FC = () => {
               </li>
               <li>
                 <Link to="/for-schools" className="hover:text-white transition">
-                  ₹2,00,000 Tech Package
+                  School Tech Package
                 </Link>
               </li>
               <li>

@@ -128,7 +128,7 @@ export async function getSchoolAdminStats(req: AuthenticatedRequest, res: Respon
       assignmentsCount,
       noticesCount,
     ] = await Promise.all([
-      School.findById(schoolId),
+      School.findById(schoolId).select('-commercialTerms'),
       Student.countDocuments({ school: schoolId }),
       Student.countDocuments({ school: schoolId, status: 'ACTIVE' }),
       Teacher.countDocuments({ school: schoolId }),

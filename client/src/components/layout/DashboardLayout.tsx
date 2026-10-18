@@ -23,6 +23,8 @@ import {
   CheckSquare,
   Shield,
   ArrowRightLeft,
+  DollarSign,
+  CreditCard,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { Role } from '../../types';
@@ -51,6 +53,7 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
           { name: 'Dashboard', path: '/admin', icon: <LayoutDashboard className="w-5 h-5" /> },
           { name: 'Schools Directory', path: '/admin/schools', icon: <Building2 className="w-5 h-5" /> },
           { name: 'CRM & Demos', path: '/admin/crm', icon: <Users className="w-5 h-5" /> },
+          { name: 'Pricing & Billing', path: '/admin/pricing', icon: <DollarSign className="w-5 h-5" /> },
           { name: 'All Students', path: '/admin/students', icon: <GraduationCap className="w-5 h-5" /> },
           { name: 'Programs & CMS', path: '/admin/cms', icon: <BookOpen className="w-5 h-5" /> },
           { name: 'Certificates', path: '/admin/certificates', icon: <Award className="w-5 h-5" /> },
@@ -58,6 +61,7 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
       case 'SCHOOL_ADMIN':
         return [
           { name: 'School Overview', path: '/school', icon: <LayoutDashboard className="w-5 h-5" /> },
+          { name: 'Commercials & Billing', path: '/school/billing', icon: <CreditCard className="w-5 h-5" /> },
           { name: 'Students & Roster', path: '/school/students', icon: <GraduationCap className="w-5 h-5" /> },
           { name: 'Teachers & Mentors', path: '/school/teachers', icon: <UserCheck className="w-5 h-5" /> },
           { name: 'Batches & Timetable', path: '/school/batches', icon: <Layers className="w-5 h-5" /> },

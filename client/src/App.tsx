@@ -25,6 +25,7 @@ import { SuperAdminSchoolsPage } from './pages/admin/SuperAdminSchoolsPage';
 import { SuperAdminCRMPage } from './pages/admin/SuperAdminCRMPage';
 import { SuperAdminStudentsPage } from './pages/admin/SuperAdminStudentsPage';
 import { SuperAdminCMSPage } from './pages/admin/SuperAdminCMSPage';
+import { SuperAdminPricingPage } from './pages/admin/SuperAdminPricingPage';
 import { AdminCertificatesPage } from './pages/admin/AdminCertificatesPage';
 import { SchoolAdminDashboard } from './pages/school/SchoolAdminDashboard';
 import { TeacherDashboard } from './pages/teacher/TeacherDashboard';
@@ -150,6 +151,14 @@ const AppContent: React.FC = () => {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/admin/pricing"
+          element={
+            <ProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN']}>
+              <SuperAdminPricingPage />
+            </ProtectedRoute>
+          }
+        />
 
         {/* School Admin Routes */}
         <Route
@@ -157,6 +166,14 @@ const AppContent: React.FC = () => {
           element={
             <ProtectedRoute allowedRoles={['SCHOOL_ADMIN', 'SUPER_ADMIN']}>
               <SchoolAdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/school/billing"
+          element={
+            <ProtectedRoute allowedRoles={['SCHOOL_ADMIN', 'SUPER_ADMIN']}>
+              <SchoolAdminDashboard defaultTab="billing" />
             </ProtectedRoute>
           }
         />

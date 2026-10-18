@@ -41,7 +41,7 @@ export const ForSchoolsPage: React.FC = () => {
     'Practical, engaging learning — AI + Coding + Editing + Freelancing',
     'Live expert-led classes with recordings & weekly tests',
     'Certificates for every student & parent visibility',
-    'School technology support worth ₹2,00,000',
+    'Comprehensive School Technology Package & Infrastructure Support',
     'Long-term digital partnership — not just a course',
   ];
 
@@ -52,21 +52,27 @@ export const ForSchoolsPage: React.FC = () => {
     { number: '04', title: 'Training Starts', desc: 'Live sessions begin in your school computer lab or smart rooms.' },
   ];
 
-  const fees = [
+  const partnershipPrograms = [
     {
       level: 'Classes 6–7',
-      partnerFee: '₹5,000 + 18% GST',
-      standardValue: '₹7,000 + 18% GST',
+      name: 'Foundation Level',
+      desc: 'AI basics, creative video making, digital safety, and curiosity building in young learners.',
+      session: '45 Min Sessions • Flexible Lab Timetable',
+      features: ['Introduction to AI & Prompting', 'Basic Video Editing', 'Safe Internet Habits', 'Mini Creative Projects'],
     },
     {
       level: 'Classes 8–10',
-      partnerFee: '₹10,000 + 18% GST',
-      standardValue: '₹14,000 + 18% GST',
+      name: 'Skill Development Level',
+      desc: 'Practical coding, content creation, research productivity, and digital portfolio foundations.',
+      session: '45 Min Sessions • Weekly Hands-on Lab',
+      features: ['Generative AI Workflows', 'Multi-Track Video Editing', 'Coding Fundamentals', 'Freelance & Career Concepts'],
     },
     {
       level: 'Classes 11–12',
-      partnerFee: '₹9,000 + 18% GST',
-      standardValue: '₹18,000 + 18% GST',
+      name: 'Advanced & Career Ready',
+      desc: 'Applied AI, commercial media production, tech entrepreneurship, and career-focused portfolios.',
+      session: '45 Min Sessions • Capstone Project Lab',
+      features: ['Applied AI Architecture', 'Professional Media Production', 'College Ready Portfolio', 'Industry Mentor Review'],
     },
   ];
 
@@ -96,11 +102,11 @@ export const ForSchoolsPage: React.FC = () => {
     },
     {
       q: 'What if the school does not reach the 300-student enrollment milestone?',
-      a: 'No problem at all. The school still receives a 10% commission on eligible enrollments, plus continued technical support, student enrollment guidance, promotion support, and full partnership assistance.',
+      a: 'No problem at all. The school still receives institutional revenue sharing on eligible enrollments, plus continued technical support, student enrollment guidance, promotion support, and full partnership assistance.',
     },
     {
       q: 'What is the value of technology benefits under the partnership?',
-      a: 'Upon achieving the 300-student enrollment milestone, ALYSTRO provides a free Professional School Website (Standard Value: ₹50,000) and a free School Mobile App (Standard Value: ₹1,50,000) — combined value of ₹2,00,000 at no additional cost.',
+      a: 'Upon achieving the 300-student enrollment milestone, ALYSTRO provides a free Professional School Website and a free School Mobile App — complete digital technology benefits provided under school partnership terms at no additional cost.',
     },
   ];
 
@@ -197,42 +203,49 @@ export const ForSchoolsPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Special School Partnership Fees */}
+        {/* School Partnership Curriculum & Delivery Structure */}
         <div className="bg-white rounded-3xl border border-slate-200 shadow-soft p-6 sm:p-10 mb-16">
           <div className="text-center max-w-xl mx-auto mb-10">
-            <Badge variant="primary" className="mb-2">Special School Partnership Fees</Badge>
+            <Badge variant="primary" className="mb-2">Curriculum & Delivery Structure</Badge>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-navy-950 font-display">
-              Partnership Fee Structure
+              Partnership Program Framework
             </h2>
             <p className="text-xs sm:text-sm text-slate-500 mt-1">
-              Special rates offered exclusively under the ALYSTRO School Partnership Program.
+              Curriculum segmented into 3 progressive tiers tailored to your school's computer lab schedule.
             </p>
           </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm border-collapse">
-              <thead>
-                <tr className="border-b-2 border-slate-200 bg-slate-50">
-                  <th className="py-4 px-6 font-bold text-slate-700 rounded-l-xl">Class Level</th>
-                  <th className="py-4 px-6 font-bold text-brand-600 text-center">Partnership Fee</th>
-                  <th className="py-4 px-6 font-bold text-slate-500 text-center rounded-r-xl">Standard Value</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {fees.map((row) => (
-                  <tr key={row.level} className="hover:bg-slate-50/40">
-                    <td className="py-4 px-6 font-semibold text-navy-950">{row.level}</td>
-                    <td className="py-4 px-6 text-center">
-                      <span className="inline-flex items-center bg-brand-50 text-brand-700 font-bold px-3 py-1 rounded-lg border border-brand-200/60">
-                        {row.partnerFee}
-                      </span>
-                    </td>
-                    <td className="py-4 px-6 text-center text-slate-400 font-medium line-through">{row.standardValue}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {partnershipPrograms.map((prog) => (
+              <div key={prog.level} className="bg-slate-50/80 rounded-2xl p-6 border border-slate-200 flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-xs font-bold px-2.5 py-1 rounded-lg bg-brand-50 text-brand-700 border border-brand-200">
+                      {prog.level}
+                    </span>
+                    <span className="text-[11px] font-semibold text-slate-500">{prog.session}</span>
+                  </div>
+                  <h3 className="text-base font-bold text-navy-950 mb-2">{prog.name}</h3>
+                  <p className="text-xs text-slate-600 leading-relaxed mb-4">{prog.desc}</p>
+                  <ul className="space-y-2 mb-6">
+                    {prog.features.map((feat) => (
+                      <li key={feat} className="text-xs text-slate-700 flex items-start gap-2">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-0.5" />
+                        <span>{feat}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <Button variant="outline" size="sm" className="w-full text-xs" onClick={() => setDemoModalOpen(true)}>
+                  Request Syllabus & Demo
+                </Button>
+              </div>
+            ))}
           </div>
-          <p className="text-xs text-slate-400 text-center mt-4">GST @ 18% is applicable on the above fees.</p>
+          <div className="text-center mt-8 pt-6 border-t border-slate-100">
+            <p className="text-xs text-slate-400">
+              Commercial terms and partnership proposals are mutually customized during the institutional onboarding stage.
+            </p>
+          </div>
         </div>
 
         {/* 300-Student Partnership Milestone */}
@@ -247,7 +260,7 @@ export const ForSchoolsPage: React.FC = () => {
                 300-Student Partnership Milestone
               </h2>
               <p className="text-slate-300 text-sm max-w-2xl mx-auto">
-                Complete the agreed enrollment milestone and unlock <span className="text-amber-300 font-bold">₹2,00,000 worth of school technology benefits</span> — provided at no additional cost under partnership terms.
+                Complete the agreed enrollment milestone and unlock <span className="text-amber-300 font-bold">full school technology infrastructure benefits</span> — provided at no additional cost under partnership terms.
               </p>
             </div>
 
@@ -259,7 +272,7 @@ export const ForSchoolsPage: React.FC = () => {
                     <Globe className="w-6 h-6 text-brand-400" />
                   </div>
                   <div>
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-brand-400">FREE</span>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-brand-400">INCLUDED</span>
                     <h3 className="text-base font-bold text-white">Professional School Website</h3>
                   </div>
                 </div>
@@ -267,8 +280,8 @@ export const ForSchoolsPage: React.FC = () => {
                   Modern professional website with admissions, gallery, announcements & online systems.
                 </p>
                 <div className="flex items-center justify-between pt-3 border-t border-navy-700">
-                  <span className="text-xs text-slate-500">Standard Value</span>
-                  <span className="text-lg font-extrabold text-emerald-400">₹50,000</span>
+                  <span className="text-xs text-slate-500">Partnership Inclusion</span>
+                  <span className="text-xs font-extrabold text-emerald-400 uppercase tracking-wider">Included for School</span>
                 </div>
               </div>
 
@@ -279,7 +292,7 @@ export const ForSchoolsPage: React.FC = () => {
                     <Smartphone className="w-6 h-6 text-purple-400" />
                   </div>
                   <div>
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-purple-400">FREE</span>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-purple-400">INCLUDED</span>
                     <h3 className="text-base font-bold text-white">School Mobile App</h3>
                   </div>
                 </div>
@@ -287,17 +300,17 @@ export const ForSchoolsPage: React.FC = () => {
                   Student, teacher & parent access. Attendance, progress tracking, school dashboard & reporting.
                 </p>
                 <div className="flex items-center justify-between pt-3 border-t border-navy-700">
-                  <span className="text-xs text-slate-500">Standard Value</span>
-                  <span className="text-lg font-extrabold text-emerald-400">₹1,50,000</span>
+                  <span className="text-xs text-slate-500">Partnership Inclusion</span>
+                  <span className="text-xs font-extrabold text-emerald-400 uppercase tracking-wider">Included for School</span>
                 </div>
               </div>
             </div>
 
             {/* Combined Value Banner */}
             <div className="bg-gradient-to-r from-amber-500/20 to-emerald-500/20 border border-amber-400/30 rounded-2xl p-6 text-center mb-8">
-              <p className="text-xs font-bold uppercase tracking-wider text-amber-300 mb-1">Combined Technology Value</p>
-              <p className="text-3xl sm:text-4xl font-extrabold text-white font-display">₹2,00,000</p>
-              <p className="text-sm text-slate-300 mt-1">Provided at no additional cost under partnership terms</p>
+              <p className="text-xs font-bold uppercase tracking-wider text-amber-300 mb-1">Integrated Technology Package</p>
+              <p className="text-2xl sm:text-3xl font-extrabold text-white font-display">School Website + Mobile App + LMS</p>
+              <p className="text-sm text-slate-300 mt-1">Provided at no additional cost under approved partnership milestone terms</p>
             </div>
 
             {/* Additional Support */}
@@ -321,88 +334,56 @@ export const ForSchoolsPage: React.FC = () => {
           </div>
         </div>
 
-        {/* School Revenue Opportunity */}
+        {/* School Partnership Growth & Institutional Commercials */}
         <div className="bg-white rounded-3xl border border-slate-200 shadow-soft p-6 sm:p-10 mb-16">
-          <div className="text-center mb-8">
-            <Badge variant="primary" className="mb-2">School Revenue Opportunity</Badge>
+          <div className="text-center mb-8 max-w-xl mx-auto">
+            <Badge variant="primary" className="mb-2">Institutional Commercials</Badge>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-navy-950 font-display">
-              Illustrative Revenue Example
+              Mutual Growth & Partnership Value
             </h2>
-            <p className="text-xs text-slate-400 mt-2">Illustrative Example — Not a Guaranteed Earning</p>
+            <p className="text-xs text-slate-500 mt-2">
+              Transparent institutional commercials structured to modernize school education with zero capital investment.
+            </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-            <div className="space-y-4">
-              <div className="bg-slate-50 rounded-2xl p-5 border border-slate-200">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm text-slate-600">ALYSTRO Partnership Fee (Classes 6–7)</span>
-                  <span className="font-bold text-navy-950">₹5,000</span>
-                </div>
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm text-slate-600">Student Fee Example</span>
-                  <span className="font-bold text-navy-950">₹7,000</span>
-                </div>
-                <div className="flex justify-between items-center pt-3 border-t border-slate-200">
-                  <span className="text-sm font-semibold text-slate-700">Illustrative School Margin (per student)</span>
-                  <span className="font-extrabold text-brand-600">₹2,000</span>
-                </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-slate-50 rounded-2xl p-6 border border-slate-200">
+              <div className="w-10 h-10 rounded-xl bg-brand-100 text-brand-600 flex items-center justify-center mb-4">
+                <TrendingUp className="w-5 h-5" />
               </div>
-              <div className="bg-brand-50 rounded-2xl p-5 border border-brand-200">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm font-bold text-brand-700">300 Students — Illustrative Total</span>
-                  <span className="text-xl font-extrabold text-brand-700">₹6,00,000</span>
-                </div>
-                <p className="text-xs text-brand-500 mt-1">Pre-GST illustrative margin</p>
-              </div>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                * All figures are pre-GST illustrations only. Actual student pricing, GST treatment, margins and partnership terms will be mutually agreed between ALYSTRO and the school.
+              <h3 className="text-base font-bold text-navy-950 mb-2">Institutional Revenue Share</h3>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Schools receive attractive institutional margins on enrolled students, agreed mutually during the formal proposal and onboarding stage.
               </p>
             </div>
-            <div className="space-y-4">
-              <div className="bg-emerald-50 rounded-2xl p-6 border border-emerald-200">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center">
-                    <TrendingUp className="w-5 h-5 text-emerald-600" />
-                  </div>
-                  <h3 className="font-bold text-emerald-800">If School Reaches 300 Students</h3>
-                </div>
-                <ul className="space-y-2">
-                  <li className="text-sm text-emerald-700 flex items-start gap-2">
-                    <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5 text-emerald-500" />
-                    ₹2,00,000 worth of technology benefits
-                  </li>
-                  <li className="text-sm text-emerald-700 flex items-start gap-2">
-                    <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5 text-emerald-500" />
-                    Free professional school website
-                  </li>
-                  <li className="text-sm text-emerald-700 flex items-start gap-2">
-                    <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5 text-emerald-500" />
-                    Free school mobile app
-                  </li>
-                </ul>
+
+            <div className="bg-slate-50 rounded-2xl p-6 border border-slate-200">
+              <div className="w-10 h-10 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center mb-4">
+                <Globe className="w-5 h-5" />
               </div>
-              <div className="bg-slate-50 rounded-2xl p-6 border border-slate-200">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center">
-                    <BarChart3 className="w-5 h-5 text-slate-600" />
-                  </div>
-                  <h3 className="font-bold text-slate-800">If School Does Not Reach 300</h3>
-                </div>
-                <ul className="space-y-2">
-                  <li className="text-sm text-slate-600 flex items-start gap-2">
-                    <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5 text-brand-500" />
-                    10% commission on eligible enrollments
-                  </li>
-                  <li className="text-sm text-slate-600 flex items-start gap-2">
-                    <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5 text-brand-500" />
-                    Continued technical support
-                  </li>
-                  <li className="text-sm text-slate-600 flex items-start gap-2">
-                    <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5 text-brand-500" />
-                    Student enrollment guidance & promotion support
-                  </li>
-                </ul>
-              </div>
+              <h3 className="text-base font-bold text-navy-950 mb-2">Zero Infrastructure Burden</h3>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                All ALYSTRO software and AI platforms run on standard web browsers. No expensive server hardware or GPU computers required.
+              </p>
             </div>
+
+            <div className="bg-slate-50 rounded-2xl p-6 border border-slate-200">
+              <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center mb-4">
+                <BarChart3 className="w-5 h-5" />
+              </div>
+              <h3 className="text-base font-bold text-navy-950 mb-2">Dedicated Academic Support</h3>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Includes co-hosting credentials for your computer faculty, classroom orientation, parent progress portals, and student certifications.
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-8 pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p className="text-xs text-slate-500">
+              * Official partner fees, applicable GST, student enrollment terms, and technology packages are detailed in your private institution agreement.
+            </p>
+            <Button variant="primary" size="sm" onClick={() => setDemoModalOpen(true)}>
+              Request Commercial Proposal
+            </Button>
           </div>
         </div>
 

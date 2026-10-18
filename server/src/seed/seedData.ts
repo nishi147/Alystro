@@ -17,6 +17,7 @@ import { Lead } from '../models/Lead.js';
 import { CMSContent } from '../models/CMSContent.js';
 import { Notice } from '../models/Notice.js';
 import { Notification } from '../models/Notification.js';
+import { PartnershipConfig } from '../models/PartnershipConfig.js';
 import { hashPassword } from '../utils/password.js';
 
 export async function seedDatabase() {
@@ -41,6 +42,7 @@ export async function seedDatabase() {
     CMSContent.deleteMany({}),
     Notice.deleteMany({}),
     Notification.deleteMany({}),
+    PartnershipConfig.deleteMany({}),
   ]);
 
   const defaultPasswordHash = await hashPassword('Admin@123');
@@ -82,6 +84,13 @@ export async function seedDatabase() {
     mode: 'HYBRID',
     featured: true,
     published: true,
+    pricing: {
+      partnerFee: 5000,
+      standardValue: 10000,
+      gstRate: 18,
+      currency: 'INR',
+      discountPercent: 50,
+    },
     features: [
       'Introduction to AI & Smart Tools',
       'Video Editing & Reels Basics',
@@ -144,6 +153,13 @@ export async function seedDatabase() {
     mode: 'HYBRID',
     featured: true,
     published: true,
+    pricing: {
+      partnerFee: 7000,
+      standardValue: 14000,
+      gstRate: 18,
+      currency: 'INR',
+      discountPercent: 50,
+    },
     features: [
       'Advanced Generative AI Workflows',
       'Motion Graphics & Timeline Editing',
@@ -203,6 +219,13 @@ export async function seedDatabase() {
     mode: 'HYBRID',
     featured: true,
     published: true,
+    pricing: {
+      partnerFee: 9000,
+      standardValue: 18000,
+      gstRate: 18,
+      currency: 'INR',
+      discountPercent: 50,
+    },
     features: [
       'Applied AI, Automation & Prompt Architecture',
       'Professional Media Production & Storytelling',
@@ -249,6 +272,41 @@ export async function seedDatabase() {
     ],
   });
 
+  // 2.5 Standard Partnership Technology Valuation Config
+  await PartnershipConfig.create({
+    key: 'standard_partnership_terms',
+    title: 'ALYSTRO School Partnership Technology Package',
+    milestoneStudents: 300,
+    combinedValuation: 200000,
+    currency: 'INR',
+    gstRate: 18,
+    benefits: [
+      {
+        id: 'website',
+        title: 'Professional School Website',
+        valuation: 50000,
+        description: 'Modern mobile-responsive school portal with admissions, announcements, photo gallery, and management system.',
+        milestoneStudents: 300,
+        isUnlocked: true,
+      },
+      {
+        id: 'mobile_app',
+        title: 'School Mobile App',
+        valuation: 150000,
+        description: 'Custom school-branded mobile application for students, parents, and faculty with attendance and progress tracking.',
+        milestoneStudents: 300,
+        isUnlocked: true,
+      },
+    ],
+    additionalSupport: [
+      'Classroom & Projector Technology Integration Support',
+      'Faculty & Computer Teacher Orientation and Co-Hosting Credentials',
+      'Student & Guardian Access Provisioning and Parent Progress Alerts',
+      'Digital Promotion Guidance & School Enrollment Assistance',
+      '10% Institutional Commission on Eligible Enrollments below Milestone',
+    ],
+  });
+
   // 3. Partner Schools
   const abcSchool = await School.create({
     name: 'ABC International School',
@@ -278,6 +336,69 @@ export async function seedDatabase() {
     programsEnrolled: [foundationProgram._id, skillBuilderProgram._id],
     paymentStatus: 'PAID',
     status: 'ACTIVE',
+    commercialTerms: {
+      planName: 'ALYSTRO School Partnership Agreement (Standard)',
+      enrollmentMilestone: 300,
+      agreedProgramFees: [
+        {
+          programId: foundationProgram._id,
+          programName: 'Foundation Program',
+          gradeLevel: 'Classes 6–7',
+          standardFee: 5000,
+          negotiatedFee: 5000,
+          gstRate: 18,
+        },
+        {
+          programId: skillBuilderProgram._id,
+          programName: 'Skill Builder Program',
+          gradeLevel: 'Classes 8–10',
+          standardFee: 7000,
+          negotiatedFee: 7000,
+          gstRate: 18,
+        },
+      ],
+      technologyBenefits: [
+        {
+          id: 'website',
+          title: 'Professional School Website',
+          valuation: 50000,
+          status: 'ACTIVE',
+        },
+        {
+          id: 'mobile_app',
+          title: 'School Mobile App',
+          valuation: 150000,
+          status: 'ACTIVE',
+        },
+      ],
+      totalValuation: 200000,
+      billing: {
+        totalBilledAmount: 141600,
+        paidAmount: 141600,
+        outstandingBalance: 0,
+        paymentStatus: 'PAID',
+        invoices: [
+          {
+            invoiceNumber: 'INV-2026-001',
+            invoiceDate: new Date('2026-04-15'),
+            amount: 120000,
+            gstAmount: 21600,
+            totalAmount: 141600,
+            status: 'PAID',
+            description: 'Term 1 Partner Fee for Foundation & Skill Builder Cohorts (Classes 6–10)',
+          },
+        ],
+        paymentHistory: [
+          {
+            transactionId: 'TXN-98421045',
+            date: new Date('2026-04-18'),
+            amount: 141600,
+            mode: 'NEFT',
+            status: 'SUCCESS',
+          },
+        ],
+      },
+    },
   });
 
   const dpmSchool = await School.create({
@@ -305,8 +426,71 @@ export async function seedDatabase() {
     studentCapacity: 800,
     activeStudentCount: 3,
     programsEnrolled: [skillBuilderProgram._id, futureReadyProgram._id],
-    paymentStatus: 'PAID',
+    paymentStatus: 'PARTIAL',
     status: 'ACTIVE',
+    commercialTerms: {
+      planName: 'ALYSTRO Institutional Partnership Agreement (Special Negotiated)',
+      enrollmentMilestone: 300,
+      agreedProgramFees: [
+        {
+          programId: skillBuilderProgram._id,
+          programName: 'Skill Builder Program',
+          gradeLevel: 'Classes 8–10',
+          standardFee: 7000,
+          negotiatedFee: 6300,
+          gstRate: 18,
+        },
+        {
+          programId: futureReadyProgram._id,
+          programName: 'Future Ready Program',
+          gradeLevel: 'Classes 11–12',
+          standardFee: 9000,
+          negotiatedFee: 8000,
+          gstRate: 18,
+        },
+      ],
+      technologyBenefits: [
+        {
+          id: 'website',
+          title: 'Professional School Website',
+          valuation: 50000,
+          status: 'ACTIVE',
+        },
+        {
+          id: 'mobile_app',
+          title: 'School Mobile App',
+          valuation: 150000,
+          status: 'ACTIVE',
+        },
+      ],
+      totalValuation: 200000,
+      billing: {
+        totalBilledAmount: 106200,
+        paidAmount: 53100,
+        outstandingBalance: 53100,
+        paymentStatus: 'PARTIAL',
+        invoices: [
+          {
+            invoiceNumber: 'INV-2026-004',
+            invoiceDate: new Date('2026-05-01'),
+            amount: 90000,
+            gstAmount: 16200,
+            totalAmount: 106200,
+            status: 'PARTIAL',
+            description: 'Term 1 Negotiated Partner Fee for Enrolled High School Batches',
+          },
+        ],
+        paymentHistory: [
+          {
+            transactionId: 'TXN-55102941',
+            date: new Date('2026-05-05'),
+            amount: 53100,
+            mode: 'ONLINE',
+            status: 'SUCCESS',
+          },
+        ],
+      },
+    },
   });
 
   const stXavierSchool = await School.create({
@@ -336,6 +520,69 @@ export async function seedDatabase() {
     programsEnrolled: [foundationProgram._id, futureReadyProgram._id],
     paymentStatus: 'PAID',
     status: 'ACTIVE',
+    commercialTerms: {
+      planName: 'ALYSTRO School Partnership Agreement (Standard)',
+      enrollmentMilestone: 300,
+      agreedProgramFees: [
+        {
+          programId: foundationProgram._id,
+          programName: 'Foundation Program',
+          gradeLevel: 'Classes 6–7',
+          standardFee: 5000,
+          negotiatedFee: 5000,
+          gstRate: 18,
+        },
+        {
+          programId: futureReadyProgram._id,
+          programName: 'Future Ready Program',
+          gradeLevel: 'Classes 11–12',
+          standardFee: 9000,
+          negotiatedFee: 9000,
+          gstRate: 18,
+        },
+      ],
+      technologyBenefits: [
+        {
+          id: 'website',
+          title: 'Professional School Website',
+          valuation: 50000,
+          status: 'ACTIVE',
+        },
+        {
+          id: 'mobile_app',
+          title: 'School Mobile App',
+          valuation: 150000,
+          status: 'ACTIVE',
+        },
+      ],
+      totalValuation: 200000,
+      billing: {
+        totalBilledAmount: 165200,
+        paidAmount: 165200,
+        outstandingBalance: 0,
+        paymentStatus: 'PAID',
+        invoices: [
+          {
+            invoiceNumber: 'INV-2026-008',
+            invoiceDate: new Date('2026-04-10'),
+            amount: 140000,
+            gstAmount: 25200,
+            totalAmount: 165200,
+            status: 'PAID',
+            description: 'Annual Partnership Fee for Foundation & Future Ready Labs',
+          },
+        ],
+        paymentHistory: [
+          {
+            transactionId: 'TXN-77889912',
+            date: new Date('2026-04-12'),
+            amount: 165200,
+            mode: 'CHEQUE',
+            status: 'SUCCESS',
+          },
+        ],
+      },
+    },
   });
 
   // 4. School Admin User Accounts
