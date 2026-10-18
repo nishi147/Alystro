@@ -144,7 +144,7 @@ export async function getSchoolAdminStats(req: AuthenticatedRequest, res: Respon
       { $group: { _id: null, avgRate: { $avg: '$attendanceRate' } } },
     ]);
 
-    const avgAttendance = attendanceAgg[0]?.avgRate || 88.5;
+    const avgAttendance = attendanceAgg[0]?.avgRate ?? 0;
 
     res.json({
       success: true,

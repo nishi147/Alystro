@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import {
   BookOpen,
   Calendar,
-  Video,
   FileText,
   Award,
   CheckCircle2,
@@ -130,8 +129,7 @@ export const StudentDashboard: React.FC = () => {
             Welcome back, {user?.name}!
           </h2>
           <p className="text-xs sm:text-sm text-slate-300 mt-1 leading-relaxed">
-            You are enrolled in the <strong className="text-brand-300">Foundation Program (AI & Digital Skills)</strong>.
-            Continue working on your projects and attend your scheduled live session.
+            Welcome to your ALYSTRO learning space. Complete your assignments, track your attendance, and earn certificates.
           </p>
         </div>
       </div>
@@ -145,30 +143,16 @@ export const StudentDashboard: React.FC = () => {
               <span className="text-xs font-bold uppercase tracking-wider text-brand-600 bg-brand-50 px-2.5 py-1 rounded-md">
                 Next Live Interactive Session
               </span>
-              <span className="text-xs font-semibold text-emerald-600 flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
-                Live in 35 mins
-              </span>
             </div>
             <h3 className="text-lg font-bold text-navy-950 mb-1">
-              Class 6-8 AI Innovators: Advanced Storyboarding & Audio
+              Live Class Schedule
             </h3>
             <p className="text-xs text-slate-500 mb-4">
-              Mentor Rohit Verma • Mon, Wed, Fri (4:00 PM – 4:45 PM IST) • Online Video Meet
+              Your teacher will share the live session link and schedule via your batch. Check the Assignments section for any active sessions.
             </p>
           </div>
-
-          <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
-            <span className="text-xs text-slate-400">Join 5 mins before start</span>
-            <a
-              href="https://meet.google.com/aly-class6-live"
-              target="_blank"
-              rel="noreferrer"
-            >
-              <Button variant="primary" size="sm" leftIcon={<Video className="w-4 h-4" />}>
-                Join Google Meet Class
-              </Button>
-            </a>
+          <div className="pt-4 border-t border-slate-100">
+            <span className="text-xs text-slate-400">Session link will appear here once your teacher publishes it</span>
           </div>
         </div>
 
@@ -177,13 +161,19 @@ export const StudentDashboard: React.FC = () => {
           <div>
             <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Class Attendance</span>
             <p className="text-3xl font-extrabold text-navy-950 font-display mt-2">
-              {attendanceSummary?.attendanceRate ?? 94}%
+              {attendanceSummary?.attendanceRate ?? 0}%
             </p>
-            <p className="text-xs text-emerald-600 font-semibold mt-1">✓ Eligible for Distinction Certificate</p>
+            {(attendanceSummary?.attendanceRate ?? 0) >= 75 ? (
+              <p className="text-xs text-emerald-600 font-semibold mt-1">✓ Eligible for Distinction Certificate</p>
+            ) : attendanceSummary ? (
+              <p className="text-xs text-amber-600 font-semibold mt-1">⚠ Minimum 75% required for certificate</p>
+            ) : (
+              <p className="text-xs text-slate-400 font-semibold mt-1">No attendance data yet</p>
+            )}
           </div>
           <div className="pt-4 border-t border-slate-100">
             <span className="text-xs text-slate-500">
-              {attendanceSummary?.presentSessions ?? 12} of {attendanceSummary?.totalSessions ?? 13} sessions attended
+              {attendanceSummary?.presentSessions ?? 0} of {attendanceSummary?.totalSessions ?? 0} sessions attended
             </span>
           </div>
         </div>

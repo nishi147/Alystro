@@ -53,7 +53,7 @@ export async function getStudents(req: AuthenticatedRequest, res: Response): Pro
         program: s.program,
         parentName: s.parentName,
         parentPhone: s.parentPhone,
-        attendanceRate: s.attendanceRate || 85,
+        attendanceRate: s.attendanceRate ?? 0,
         completedAssignments: s.completedAssignments || 0,
         totalScore: s.totalScore || 0,
         status: s.status,

@@ -107,44 +107,26 @@ export const LoginPage: React.FC = () => {
             </div>
           </form>
 
-          {/* Quick Demo Credentials Box */}
+          {/* Seed / Demo Accounts Note */}
           <div className="mt-8 pt-6 border-t border-slate-100">
             <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-3 text-center">
-              Quick One-Click Demo Credentials
+              Demo / Test Account Access
             </p>
-            <div className="grid grid-cols-2 gap-2 text-xs">
+            <div className="space-y-2 text-xs text-slate-500">
+              <p>
+                If you were provided demo credentials by ALYSTRO, use them above. The platform Super Admin account is:
+              </p>
               <button
                 type="button"
                 onClick={() => fillQuickCreds('superadmin@alystro.com', 'Admin@123')}
-                className="p-2.5 rounded-xl border border-purple-200 bg-purple-50 hover:bg-purple-100 text-purple-900 font-semibold text-left transition"
+                className="w-full p-2.5 rounded-xl border border-purple-200 bg-purple-50 hover:bg-purple-100 text-purple-900 font-semibold text-left transition text-xs"
               >
-                <span className="block text-[10px] text-purple-500 uppercase">Super Admin</span>
-                Global Owner
+                <span className="block text-[10px] text-purple-500 uppercase mb-0.5">Super Admin — Click to fill</span>
+                superadmin@alystro.com
               </button>
-              <button
-                type="button"
-                onClick={() => fillQuickCreds('principal@abcschool.edu', 'School@123')}
-                className="p-2.5 rounded-xl border border-blue-200 bg-blue-50 hover:bg-blue-100 text-blue-900 font-semibold text-left transition"
-              >
-                <span className="block text-[10px] text-blue-500 uppercase">School Admin</span>
-                ABC Int. Principal
-              </button>
-              <button
-                type="button"
-                onClick={() => fillQuickCreds('mentor.rohit@alystro.com', 'Teacher@123')}
-                className="p-2.5 rounded-xl border border-emerald-200 bg-emerald-50 hover:bg-emerald-100 text-emerald-900 font-semibold text-left transition"
-              >
-                <span className="block text-[10px] text-emerald-500 uppercase">Teacher / Mentor</span>
-                Rohit Verma
-              </button>
-              <button
-                type="button"
-                onClick={() => fillQuickCreds('aarav.sharma@student.alystro.com', 'Student@123')}
-                className="p-2.5 rounded-xl border border-amber-200 bg-amber-50 hover:bg-amber-100 text-amber-900 font-semibold text-left transition"
-              >
-                <span className="block text-[10px] text-amber-500 uppercase">Student</span>
-                Aarav (Class 7)
-              </button>
+              <p className="text-[11px] text-slate-400 text-center pt-1">
+                Other roles? Register a new account or contact your school administrator.
+              </p>
             </div>
           </div>
         </div>

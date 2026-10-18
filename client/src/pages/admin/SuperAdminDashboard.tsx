@@ -115,10 +115,10 @@ export const SuperAdminDashboard: React.FC = () => {
             </div>
           </div>
           <p className="text-2xl sm:text-3xl font-extrabold text-navy-950 font-display">
-            {stats?.summary?.totalLeads ?? 125}
+            {stats?.summary?.totalLeads ?? 0}
           </p>
           <p className="text-[11px] text-emerald-600 font-semibold mt-1">
-            ↑ {stats?.summary?.newLeads ?? 12} new this week
+            ↑ {stats?.summary?.newLeads ?? 0} new this week
           </p>
         </div>
 
@@ -130,10 +130,10 @@ export const SuperAdminDashboard: React.FC = () => {
             </div>
           </div>
           <p className="text-2xl sm:text-3xl font-extrabold text-navy-950 font-display">
-            {stats?.summary?.totalSchools ?? 14}
+            {stats?.summary?.totalSchools ?? 0}
           </p>
           <p className="text-[11px] text-slate-500 font-semibold mt-1">
-            {stats?.summary?.activeSchools ?? 12} Active Tenants
+            {stats?.summary?.activeSchools ?? 0} Active Tenants
           </p>
         </div>
 
@@ -145,7 +145,7 @@ export const SuperAdminDashboard: React.FC = () => {
             </div>
           </div>
           <p className="text-2xl sm:text-3xl font-extrabold text-navy-950 font-display">
-            {stats?.summary?.totalPrograms ?? 8}
+            {stats?.summary?.totalPrograms ?? 0}
           </p>
           <p className="text-[11px] text-slate-500 font-semibold mt-1">Class 6–12 Live</p>
         </div>
@@ -158,7 +158,7 @@ export const SuperAdminDashboard: React.FC = () => {
             </div>
           </div>
           <p className="text-2xl sm:text-3xl font-extrabold text-navy-950 font-display">
-            {stats?.summary?.scheduledDemos ?? 32}
+            {stats?.summary?.scheduledDemos ?? 0}
           </p>
           <p className="text-[11px] text-amber-600 font-semibold mt-1">Scheduled Workshops</p>
         </div>
@@ -192,22 +192,30 @@ export const SuperAdminDashboard: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 text-slate-700">
-                  {recentLeads.map((lead) => (
-                    <tr key={lead._id} className="hover:bg-slate-50/60 transition-colors">
-                      <td className="py-3.5 px-5 font-semibold text-slate-900">{lead.contactPerson}</td>
-                      <td className="py-3.5 px-5">{lead.schoolName}</td>
-                      <td className="py-3.5 px-5 font-mono">{lead.phone}</td>
-                      <td className="py-3.5 px-5">
-                        <span className="bg-slate-100 text-slate-600 px-2 py-0.5 rounded text-[11px] font-medium">
-                          {lead.classes?.[0] || 'Class 6-8'}
-                        </span>
-                      </td>
-                      <td className="py-3.5 px-5">{getStatusBadge(lead.status)}</td>
-                      <td className="py-3.5 px-5 text-right text-slate-400 font-mono text-[11px]">
-                        {new Date(lead.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })}
+                  {recentLeads.length === 0 ? (
+                    <tr>
+                      <td colSpan={6} className="py-12 text-center text-slate-400 text-xs">
+                        No inquiries or leads submitted yet. Submit a demo request from the homepage to see it here.
                       </td>
                     </tr>
-                  ))}
+                  ) : (
+                    recentLeads.map((lead) => (
+                      <tr key={lead._id} className="hover:bg-slate-50/60 transition-colors">
+                        <td className="py-3.5 px-5 font-semibold text-slate-900">{lead.contactPerson}</td>
+                        <td className="py-3.5 px-5">{lead.schoolName}</td>
+                        <td className="py-3.5 px-5 font-mono">{lead.phone}</td>
+                        <td className="py-3.5 px-5">
+                          <span className="bg-slate-100 text-slate-600 px-2 py-0.5 rounded text-[11px] font-medium">
+                            {lead.classes?.[0] || '—'}
+                          </span>
+                        </td>
+                        <td className="py-3.5 px-5">{getStatusBadge(lead.status)}</td>
+                        <td className="py-3.5 px-5 text-right text-slate-400 font-mono text-[11px]">
+                          {new Date(lead.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })}
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>

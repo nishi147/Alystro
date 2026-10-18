@@ -247,7 +247,10 @@ export const TeacherDashboard: React.FC = () => {
             </div>
             <h3 className="text-base font-bold text-navy-950">{b.name}</h3>
             <p className="text-xs text-slate-500 mt-1">
-              Schedule: Mon, Wed, Fri (4:00 PM – 4:45 PM) • Lab 1
+              {b.schedule && b.schedule.length > 0
+                ? `${b.schedule.map((s: any) => s.dayOfWeek).join(', ')} (${b.schedule[0]?.startTime} – ${b.schedule[0]?.endTime})`
+                : 'Schedule not set'
+              }{b.classroomNumber ? ` • ${b.classroomNumber}` : ''}
             </p>
           </div>
         ))}

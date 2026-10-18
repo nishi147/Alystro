@@ -318,7 +318,7 @@ export const SchoolAdminDashboard: React.FC = () => {
         <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-soft">
           <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Teachers & Mentors</span>
           <p className="text-2xl sm:text-3xl font-extrabold text-navy-950 font-display mt-2">
-            {teachers.length || 1}
+            {teachers.length || 0}
           </p>
           <p className="text-[11px] text-brand-600 font-semibold mt-1">Certified ALYSTRO Trainers</p>
         </div>
@@ -334,7 +334,7 @@ export const SchoolAdminDashboard: React.FC = () => {
         <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-soft">
           <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Average Attendance</span>
           <p className="text-2xl sm:text-3xl font-extrabold text-navy-950 font-display mt-2">
-            {stats?.averageAttendance ?? 92}%
+            {stats?.averageAttendance ?? 0}%
           </p>
           <p className="text-[11px] text-brand-600 font-semibold mt-1">Engagement Metric</p>
         </div>
