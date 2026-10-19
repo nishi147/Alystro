@@ -258,6 +258,59 @@ export async function getMyTeacherBatches(req: AuthenticatedRequest, res: Respon
   }
 }
 
+// ─── PUT /teachers/me/batches/:batchId/classroom ──────────────────────────────
+export async function updateMyTeacherBatchClassroom(req: AuthenticatedRequest, res: Response): Promise<void> {
+  try {
+    const { batchId } = req.params;
+    const { meetingLink, googleClassroomUrl, googleClassroomCode, classroomNumber } = req.body;
+
+    const batch = await Batch.findById(batchId);
+    if (!batch) {
+      res.status(404).json({ success: false, message: 'Batch not found.' });
+      return;
+    }
+
+    // Verify the teacher owns this batch
+    if (batch.teacher?.toString() !== req.user?.userId) {
+      res.status(403).json({ success: false, message: 'You are not assigned to this batch.' });
+      return;
+    }
+
+    // Validate URLs if provided
+    if (meetingLink) {
+      const validation = validateClassroomUrl(meetingLink);
+      if (!validation.isValid) {
+        res.status(400).json({ success: false, message: validation.error || 'Invalid meeting link.' });
+        return;
+      }
+      batch.meetingLink = meetingLink.trim();
+    }
+
+    if (googleClassroomUrl) {
+      const validation = validateClassroomUrl(googleClassroomUrl);
+      if (!validation.isValid) {
+        res.status(400).json({ success: false, message: validation.error || 'Invalid Google Classroom URL.' });
+        return;
+      }
+      batch.googleClassroomUrl = googleClassroomUrl.trim();
+    }
+
+    if (googleClassroomCode !== undefined) {
+      batch.googleClassroomCode = googleClassroomCode ? googleClassroomCode.trim() : undefined;
+    }
+
+    if (classroomNumber !== undefined) {
+      batch.classroomNumber = classroomNumber ? classroomNumber.trim() : undefined;
+    }
+
+    await batch.save();
+
+    res.json({ success: true, message: 'Classroom details updated successfully.', data: batch });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+}
+
 // ─── GET /teachers/me/students ────────────────────────────────────────────────
 export async function getMyTeacherStudents(req: AuthenticatedRequest, res: Response): Promise<void> {
   try {

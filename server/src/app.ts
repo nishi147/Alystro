@@ -88,6 +88,26 @@ const healthCheckHandler = (_req: express.Request, res: express.Response) => {
   });
 };
 
+// Root and status landing handlers
+app.get('/', (_req, res) => {
+  res.json({
+    status: 'online',
+    service: 'alystro-api-server',
+    version: '1.0.0',
+    documentation: '/api/v1',
+    health: '/health',
+  });
+});
+
+app.get('/api', (_req, res) => {
+  res.json({
+    status: 'online',
+    service: 'alystro-api-server',
+    version: '1.0.0',
+    documentation: '/api/v1',
+  });
+});
+
 app.get('/health', healthCheckHandler);
 app.get('/api/health', healthCheckHandler);
 app.get('/api/v1/health', healthCheckHandler);

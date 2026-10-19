@@ -10,6 +10,15 @@ const ensureDbConnected = async () => {
 };
 
 export default async function handler(req: any, res: any) {
-  await ensureDbConnected();
-  return app(req, res);
+  try {
+    await ensureDbConnected();
+    return app(req, res);
+  } catch (error: any) {
+    console.error('[Vercel Handler] Fatal error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error during initialization.',
+      error: process.env.NODE_ENV !== 'production' ? error.message : undefined,
+    });
+  }
 }

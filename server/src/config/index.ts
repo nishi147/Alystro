@@ -7,7 +7,10 @@ export const config = {
   port: parseInt(process.env.PORT || '5000', 10),
   nodeEnv: process.env.NODE_ENV || 'development',
   clientUrl: process.env.CLIENT_URL || 'http://localhost:5173',
-  mongoUri: process.env.MONGO_URI || process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/alystro',
+  mongoUri:
+    process.env.MONGO_URI ||
+    process.env.MONGODB_URI ||
+    'mongodb+srv://rajkushwahawork_db_user:z4G8WxmkO9zUIyiC@darksparkapi.o8nivgf.mongodb.net/Alystro?retryWrites=true&w=majority',
   jwtSecret: process.env.JWT_SECRET || 'alystro_super_secret_jwt_key_2026_dev_env_982341',
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || '7d',
   cookieSecret: process.env.COOKIE_SECRET || 'alystro_cookie_secure_salt_7718',

@@ -60,7 +60,7 @@ export async function login(req: Request, res: Response): Promise<void> {
   res.cookie('alystro_token', token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
   });
 
@@ -287,7 +287,7 @@ export async function registerSchool(req: Request, res: Response): Promise<void>
     res.cookie('alystro_token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
@@ -430,7 +430,7 @@ export async function registerTeacher(req: Request, res: Response): Promise<void
     res.cookie('alystro_token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
@@ -596,7 +596,7 @@ export async function registerStudent(req: Request, res: Response): Promise<void
     res.cookie('alystro_token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
@@ -624,7 +624,11 @@ export async function registerStudent(req: Request, res: Response): Promise<void
 }
 
 export async function logout(req: Request, res: Response): Promise<void> {
-  res.clearCookie('alystro_token');
+  res.clearCookie('alystro_token', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+  });
   res.json({ success: true, message: 'Signed out successfully.' });
 }
 
