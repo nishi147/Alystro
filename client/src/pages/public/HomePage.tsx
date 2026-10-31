@@ -366,9 +366,10 @@ export const HomePage: React.FC = () => {
           </div>
           <p className="text-center text-[11px] sm:text-xs text-slate-400 mt-3 sm:mt-4">Saturday & Sunday Off — Balanced learning alongside regular education</p>
         </div>
+        
       </section>
 
-      {/* 6. Our Programs */}
+      {/* 6. Our Programs */}  
       <section className="py-12 sm:py-20 bg-slate-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <Badge variant="primary" className="mb-2 sm:mb-3">For Classes 6 to 12</Badge>

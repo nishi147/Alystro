@@ -20,6 +20,10 @@ app.use(
 
 // CORS configuration — supports multiple origins via comma-separated CLIENT_URL env var
 const explicitOrigins = [
+  'https://www.alystro.co.in',
+  'https://alystro.co.in',
+  'http://www.alystro.co.in',
+  'http://alystro.co.in',
   'https://alystro-4mln.vercel.app',
   'https://alystro.vercel.app',
   'http://localhost:5173',
@@ -39,11 +43,12 @@ app.use(
     origin: (origin, callback) => {
       // Allow requests with no origin (mobile apps, curl, Postman, serverless internal, etc.)
       if (!origin) return callback(null, true);
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
-      // In production allow any valid Vercel preview branch deployment
-      if (origin.endsWith('.vercel.app')) {
+      if (
+        allowedOrigins.includes(origin) ||
+        origin === 'https://alystro.co.in' ||
+        origin.endsWith('.alystro.co.in') ||
+        origin.endsWith('.vercel.app')
+      ) {
         return callback(null, true);
       }
       return callback(new Error(`CORS: Origin ${origin} not allowed`), false);

@@ -6,4 +6,7 @@ export const CONTACT_INFO = {
   whatsapp: '+91 92568 69651',
   address: 'Pratap Nagar, Sector 19, Jaipur, Rajasthan 302033',
   supportHours: 'Monday - Saturday: 9:00 AM - 6:00 PM IST',
+  domain: 'alystro.co.in',
+  website: 'https://www.alystro.co.in',
 };
+

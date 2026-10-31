@@ -6,6 +6,7 @@ import { School } from '../models/School.js';
 import { Program } from '../models/Program.js';
 import { AuthenticatedRequest } from '../middleware/auth.js';
 import { AuditLog } from '../models/AuditLog.js';
+import { config } from '../config/index.js';
 
 export async function getCertificates(req: AuthenticatedRequest, res: Response): Promise<void> {
   try {
@@ -96,8 +97,9 @@ export async function issueCertificate(req: AuthenticatedRequest, res: Response)
     const randomHex = Math.floor(100000 + Math.random() * 900000);
     const certificateId = `ALY-${year}-${randomHex}`;
 
-    // Verification URL
-    const verifyUrl = `${req.protocol}://${req.get('host')}/verify/${certificateId}`;
+    // Verification URL pointing to the live client portal
+    const clientBase = (config.clientUrl || '').split(',')[0].trim() || 'https://www.alystro.co.in';
+    const verifyUrl = `${clientBase}/verify/${certificateId}`;
     const qrCodeDataUrl = await QRCode.toDataURL(verifyUrl, {
       width: 250,
       margin: 1,
