@@ -27,6 +27,7 @@ import { SuperAdminStudentsPage } from './pages/admin/SuperAdminStudentsPage';
 import { SuperAdminCMSPage } from './pages/admin/SuperAdminCMSPage';
 import { SuperAdminPricingPage } from './pages/admin/SuperAdminPricingPage';
 import { AdminCertificatesPage } from './pages/admin/AdminCertificatesPage';
+import { AdminGoogleClassroomPage } from './pages/admin/AdminGoogleClassroomPage';
 import { SchoolAdminDashboard } from './pages/school/SchoolAdminDashboard';
 import { TeacherDashboard } from './pages/teacher/TeacherDashboard';
 import { StudentDashboard } from './pages/student/StudentDashboard';
@@ -156,6 +157,14 @@ const AppContent: React.FC = () => {
           element={
             <ProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN']}>
               <SuperAdminPricingPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/google-classroom"
+          element={
+            <ProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN', 'SCHOOL_ADMIN']}>
+              <AdminGoogleClassroomPage />
             </ProtectedRoute>
           }
         />
@@ -379,6 +388,14 @@ const AppContent: React.FC = () => {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/teacher/classroom"
+          element={
+            <ProtectedRoute allowedRoles={['TEACHER', 'SUPER_ADMIN']}>
+              <TeacherDashboard defaultTab="classroom" />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Student Routes */}
         <Route
@@ -386,6 +403,14 @@ const AppContent: React.FC = () => {
           element={
             <ProtectedRoute allowedRoles={['STUDENT', 'SUPER_ADMIN']}>
               <StudentDashboard defaultTab="overview" />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/student/classroom"
+          element={
+            <ProtectedRoute allowedRoles={['STUDENT', 'SUPER_ADMIN']}>
+              <StudentDashboard defaultTab="classroom" />
             </ProtectedRoute>
           }
         />

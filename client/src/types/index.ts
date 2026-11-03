@@ -306,3 +306,92 @@ export interface SuperAdminStats {
     crmFunnel: { stage: string; count: number }[];
   };
 }
+
+export interface GoogleClassroom {
+  _id: string;
+  classroomName: string;
+  school: {
+    _id: string;
+    name: string;
+    code: string;
+    city?: string;
+    state?: string;
+    logo?: string;
+  };
+  course: {
+    _id: string;
+    name: string;
+    slug?: string;
+    category?: string;
+    gradeLevel?: string;
+    durationMonths?: number;
+    banner?: string;
+  };
+  batch: {
+    _id: string;
+    name: string;
+    grade?: string;
+    section?: string;
+    schedule?: { dayOfWeek: string; startTime: string; endTime: string }[];
+    startDate?: string;
+    currentStudentCount?: number;
+    maxStudents?: number;
+    meetingLink?: string;
+  };
+  teacher?: {
+    _id: string;
+    name: string;
+    email: string;
+    phone?: string;
+    avatar?: string;
+  } | null;
+  classroomUrl: string;
+  instructions?: string;
+  status: 'ACTIVE' | 'INACTIVE';
+  studentCount?: number;
+  totalEnrolled?: number;
+  enrolledStudents?: {
+    _id: string;
+    rollNumber: string;
+    grade: string;
+    section: string;
+    attendanceRate?: number;
+    name: string;
+    email: string;
+    phone?: string;
+    avatar?: string;
+  }[];
+  updateRequest?: {
+    requestedBy?: { _id: string; name: string; email: string };
+    requestedAt?: string;
+    reason: string;
+    suggestedUrl?: string;
+    resolved: boolean;
+  };
+  createdBy?: {
+    _id: string;
+    name: string;
+    email: string;
+    role: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface StudentGoogleClassroom {
+  _id: string;
+  classroomName: string;
+  classroomUrl: string;
+  instructions?: string;
+  status: 'ACTIVE' | 'INACTIVE';
+  courseName: string;
+  courseCategory?: string;
+  batchName: string;
+  batchGrade?: string;
+  batchSection?: string;
+  teacherName: string;
+  teacherAvatar?: string;
+  schoolName?: string;
+  createdAt: string;
+}
+

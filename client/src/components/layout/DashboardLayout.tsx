@@ -37,6 +37,7 @@ import {
   Upload,
   ClipboardList,
   TrendingUp,
+  ExternalLink,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { Role } from '../../types';
@@ -64,6 +65,7 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
           { name: 'Dashboard', path: '/admin', icon: <LayoutDashboard className="w-5 h-5" /> },
           { name: 'Schools Directory', path: '/admin/schools', icon: <Building2 className="w-5 h-5" /> },
           { name: 'CRM & Demos', path: '/admin/crm', icon: <Users className="w-5 h-5" /> },
+          { name: 'Google Classroom', path: '/admin/google-classroom', icon: <GraduationCap className="w-5 h-5" /> },
           { name: 'Pricing & Billing', path: '/admin/pricing', icon: <DollarSign className="w-5 h-5" /> },
           { name: 'All Students', path: '/admin/students', icon: <GraduationCap className="w-5 h-5" /> },
           { name: 'Programs & CMS', path: '/admin/cms', icon: <BookOpen className="w-5 h-5" /> },
@@ -72,6 +74,7 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
       case 'SCHOOL_ADMIN':
         return [
           { name: 'School Overview', path: '/school', icon: <LayoutDashboard className="w-5 h-5" /> },
+          { name: 'Google Classroom', path: '/admin/google-classroom', icon: <GraduationCap className="w-5 h-5" /> },
           { name: 'Students & Roster', path: '/school/students', icon: <GraduationCap className="w-5 h-5" /> },
           { name: 'Bulk Import', path: '/school/bulk-import', icon: <FileSpreadsheet className="w-5 h-5" /> },
           { name: 'Classes Management', path: '/school/classes', icon: <BookOpen className="w-5 h-5" /> },
@@ -89,6 +92,7 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
       case 'TEACHER':
         return [
           { name: 'Mentor Dashboard', path: '/teacher', icon: <LayoutDashboard className="w-5 h-5" /> },
+          { name: 'Google Classroom', path: '/teacher/classroom', icon: <ExternalLink className="w-5 h-5" /> },
           { name: 'Assigned Batches', path: '/teacher/batches', icon: <Layers className="w-5 h-5" /> },
           { name: 'My Students', path: '/teacher/students', icon: <GraduationCap className="w-5 h-5" /> },
           { name: "Today's Classes", path: '/teacher/classes', icon: <Video className="w-5 h-5" /> },
@@ -104,6 +108,7 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
       case 'STUDENT':
         return [
           { name: 'My Learning Portal', path: '/student', icon: <LayoutDashboard className="w-5 h-5" /> },
+          { name: 'Google Classroom', path: '/student/classroom', icon: <ExternalLink className="w-5 h-5" /> },
           { name: 'My Course', path: '/student/course', icon: <BookOpen className="w-5 h-5" /> },
           { name: 'My Batch', path: '/student/batch', icon: <Layers className="w-5 h-5" /> },
           { name: 'Live Classes', path: '/student/live-classes', icon: <Video className="w-5 h-5" /> },

@@ -117,8 +117,10 @@ app.get('/health', healthCheckHandler);
 app.get('/api/health', healthCheckHandler);
 app.get('/api/v1/health', healthCheckHandler);
 
-// Primary API v1 Router
+// Primary API v1 Router & alias
 app.use('/api/v1', apiRouter);
+app.use('/api', apiRouter);
+
 
 // Centralized Error Handling
 app.use(errorHandler);

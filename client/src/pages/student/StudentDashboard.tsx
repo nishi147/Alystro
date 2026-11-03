@@ -37,6 +37,9 @@ import {
   X,
   Play,
   Share2,
+  Copy,
+  GraduationCap,
+  Info,
 } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/Badge';
@@ -49,6 +52,7 @@ import { useAuth } from '../../context/AuthContext';
 
 export type StudentTab =
   | 'overview'
+  | 'classroom'
   | 'course'
   | 'batch'
   | 'live-classes'
@@ -84,6 +88,9 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ defaultTab =
   const [certificates, setCertificates] = useState<Certificate[]>([]);
   const [attendanceData, setAttendanceData] = useState<any>(null);
   const [progressData, setProgressData] = useState<any>(null);
+  const [studentClassrooms, setStudentClassrooms] = useState<any[]>([]);
+  const [isLoadingStudentClassrooms, setIsLoadingStudentClassrooms] = useState(false);
+  const [copiedStudentClassroomId, setCopiedStudentClassroomId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   // Sync tab with props
@@ -167,6 +174,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ defaultTab =
         certRes,
         attRes,
         progRes,
+        classroomRes,
       ] = await Promise.all([
         api.get('/students/me/profile').catch(() => ({ success: false })),
         api.get('/students/me/batch').catch(() => ({ success: false })),
@@ -179,6 +187,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ defaultTab =
         api.get('/certificates').catch(() => ({ success: false })),
         api.get('/attendance/student/self').catch(() => ({ success: false })),
         api.get('/students/me/progress').catch(() => ({ success: false })),
+        api.get('/google-classrooms/student').catch(() => ({ success: false })),
       ]);
 
       if (profRes.success && profRes.data) {
@@ -201,6 +210,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ defaultTab =
       if (certRes.success) setCertificates(certRes.data || []);
       if (attRes.success) setAttendanceData(attRes.data);
       if (progRes.success) setProgressData(progRes.data);
+      if (classroomRes.success && classroomRes.data) setStudentClassrooms(classroomRes.data);
     } catch (err) {
       console.error('Error loading student dashboard data:', err);
     } finally {
@@ -392,6 +402,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ defaultTab =
         <div className="flex space-x-1 sm:space-x-2 min-w-max pb-1">
           {[
             { id: 'overview', label: 'Dashboard Overview', icon: LayoutDashboard },
+            { id: 'classroom', label: 'Google Classroom', icon: GraduationCap },
             { id: 'course', label: 'My Course', icon: BookOpen },
             { id: 'batch', label: 'My Batch', icon: Layers },
             { id: 'live-classes', label: 'Live Classes', icon: Video },
@@ -538,6 +549,143 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ defaultTab =
               </div>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* ========================================================= */}
+      {/* TAB: GOOGLE CLASSROOM                                     */}
+      {/* ========================================================= */}
+      {activeTab === 'classroom' && (
+        <div className="space-y-6">
+          <div className="bg-gradient-to-r from-emerald-50 via-white to-emerald-50/30 p-6 rounded-2xl border border-emerald-200/60 shadow-soft">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="p-2 bg-emerald-100 text-emerald-700 rounded-lg">
+                    <GraduationCap className="w-5 h-5" />
+                  </div>
+                  <h2 className="text-xl font-bold text-slate-900">Google Classroom Portal</h2>
+                </div>
+                <p className="text-sm text-slate-600">
+                  Access your course assignments, study documents, quizzes, and mentor feedback directly on Google Classroom.
+                </p>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={async () => {
+                  setIsLoadingStudentClassrooms(true);
+                  try {
+                    const res = await api.get('/google-classrooms/student');
+                    if (res.success && res.data) setStudentClassrooms(res.data);
+                  } finally {
+                    setIsLoadingStudentClassrooms(false);
+                  }
+                }}
+                className="gap-2 self-start sm:self-auto text-xs"
+              >
+                Refresh Classrooms
+              </Button>
+            </div>
+          </div>
+
+          {isLoadingStudentClassrooms ? (
+            <div className="py-20 flex flex-col items-center justify-center text-slate-500">
+              <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-emerald-600 mb-3" />
+              <p className="text-sm">Loading your classrooms...</p>
+            </div>
+          ) : studentClassrooms.length === 0 ? (
+            <div className="bg-white p-12 text-center rounded-2xl border border-slate-200 shadow-soft">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400">
+                <GraduationCap className="w-8 h-8" />
+              </div>
+              <h3 className="text-lg font-bold text-slate-800">No Classroom Connected</h3>
+              <p className="text-sm text-slate-600 max-w-md mx-auto mt-2 leading-relaxed">
+                Your Google Classroom has not been connected yet. Please contact your administrator.
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {studentClassrooms.map((c) => {
+                const isCopied = copiedStudentClassroomId === c._id;
+                return (
+                  <div
+                    key={c._id}
+                    className="p-6 border border-slate-200 shadow-soft hover:shadow-card transition flex flex-col justify-between rounded-2xl bg-white"
+                  >
+                    <div>
+                      <div className="flex items-start justify-between gap-3 mb-3">
+                        <span className="text-xs font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-100">
+                          Google Classroom
+                        </span>
+                        <Badge variant={c.status === 'ACTIVE' ? 'success' : 'neutral'} size="sm">
+                          {c.status === 'ACTIVE' ? 'Active' : 'Inactive'}
+                        </Badge>
+                      </div>
+
+                      <h3 className="text-lg font-bold text-slate-900 mb-1">{c.classroomName}</h3>
+
+                      <div className="space-y-1.5 text-xs text-slate-600 mt-3 pt-3 border-t border-slate-100">
+                        <p>
+                          Course: <strong className="text-slate-800">{c.courseName}</strong>
+                        </p>
+                        <p>
+                          Batch: <strong className="text-slate-800">{c.batchName}</strong> (Grade {c.batchGrade}
+                          {c.batchSection ? ` - Section ${c.batchSection}` : ''})
+                        </p>
+                        <p>
+                          Lead Mentor: <strong className="text-slate-800">{c.teacherName}</strong>
+                        </p>
+                        {c.schoolName && (
+                          <p>
+                            School: <span className="text-slate-700">{c.schoolName}</span>
+                          </p>
+                        )}
+                      </div>
+
+                      {c.instructions ? (
+                        <div className="mt-4 p-3.5 bg-emerald-50/70 border border-emerald-100 rounded-xl text-xs text-emerald-950">
+                          <div className="flex items-center gap-1.5 font-bold text-emerald-900 mb-1">
+                            <Info className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                            Admin Instructions:
+                          </div>
+                          <p className="leading-relaxed text-emerald-900/90">{c.instructions}</p>
+                        </div>
+                      ) : (
+                        <div className="mt-4 p-3 bg-slate-50 border border-slate-100 rounded-xl text-xs text-slate-400 italic">
+                          No special instructions provided.
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="mt-6 pt-4 border-t border-slate-100 flex items-center gap-3">
+                      <a
+                        href={c.classroomUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex-1 py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-2 shadow-sm transition"
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                        Open Google Classroom
+                      </a>
+                      <button
+                        onClick={() => {
+                          navigator.clipboard.writeText(c.classroomUrl);
+                          setCopiedStudentClassroomId(c._id);
+                          setTimeout(() => setCopiedStudentClassroomId(null), 2000);
+                        }}
+                        title="Copy Classroom URL"
+                        className="py-2.5 px-3 border border-slate-200 hover:border-slate-300 bg-slate-50 hover:bg-slate-100 text-slate-700 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition"
+                      >
+                        {isCopied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
+                        <span>{isCopied ? 'Copied' : 'Copy Link'}</span>
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       )}
 

@@ -27,6 +27,9 @@ import {
   Star,
   RefreshCw,
   Edit2,
+  Copy,
+  Link2,
+  Info,
 } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/Badge';
@@ -249,6 +252,58 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ defaultTab =
   const [isLoadingReports, setIsLoadingReports] = useState(false);
   const [reportBatch, setReportBatch] = useState('');
 
+  // ─── Google Classroom Tab state ───────────────────────────────────────────
+  const [googleClassrooms, setGoogleClassrooms] = useState<any[]>([]);
+  const [isLoadingClassrooms, setIsLoadingClassrooms] = useState(false);
+  const [copiedClassroomId, setCopiedClassroomId] = useState<string | null>(null);
+  const [requestUpdateOpen, setRequestUpdateOpen] = useState(false);
+  const [selectedClassroomForRequest, setSelectedClassroomForRequest] = useState<any | null>(null);
+  const [requestReason, setRequestReason] = useState('');
+  const [suggestedUrlInput, setSuggestedUrlInput] = useState('');
+  const [isSubmittingRequest, setIsSubmittingRequest] = useState(false);
+  const [requestFeedback, setRequestFeedback] = useState<string | null>(null);
+
+  const loadGoogleClassrooms = useCallback(async () => {
+    setIsLoadingClassrooms(true);
+    try {
+      const res = await api.get('/google-classrooms/teacher');
+      if (res.success && res.data) {
+        setGoogleClassrooms(res.data);
+      }
+    } catch (err) {
+      console.error('Failed to load teacher classrooms:', err);
+    } finally {
+      setIsLoadingClassrooms(false);
+    }
+  }, []);
+
+  const handleSendUpdateRequest = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedClassroomForRequest || !requestReason.trim()) return;
+    setIsSubmittingRequest(true);
+    try {
+      const res = await api.post(`/google-classrooms/${selectedClassroomForRequest._id}/request-update`, {
+        reason: requestReason.trim(),
+        suggestedUrl: suggestedUrlInput.trim() || undefined,
+      });
+      if (res.success) {
+        setRequestFeedback('Update request successfully submitted to ALYSTRO administration.');
+        setTimeout(() => {
+          setRequestUpdateOpen(false);
+          setRequestFeedback(null);
+          setRequestReason('');
+          setSuggestedUrlInput('');
+          loadGoogleClassrooms();
+        }, 1500);
+      }
+    } catch (err: any) {
+      alert(err.message || 'Failed to submit update request.');
+    } finally {
+      setIsSubmittingRequest(false);
+    }
+  };
+
+
   // ─── Google Classroom modal state ──────────────────────────────────────────
   const [editClassroomOpen, setEditClassroomOpen] = useState(false);
   const [selectedBatchForClassroom, setSelectedBatchForClassroom] = useState<Batch | null>(null);
@@ -363,6 +418,13 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ defaultTab =
     }
     loadBatchStudents();
   }, [attBatch, activeTab]);
+
+  // ─── Load Google Classrooms ────────────────────────────────────────────────
+  useEffect(() => {
+    if (activeTab === 'classroom' || activeTab === 'overview') {
+      loadGoogleClassrooms();
+    }
+  }, [activeTab, loadGoogleClassrooms]);
 
   // ─── Load assignments ──────────────────────────────────────────────────────
   useEffect(() => {
@@ -643,6 +705,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ defaultTab =
               {activeTab === 'progress' && '📈 Student Progress'}
               {activeTab === 'remarks' && '💬 Remarks & Feedback'}
               {activeTab === 'reports' && '📊 Reports'}
+              {activeTab === 'classroom' && '🏫 Google Classroom'}
             </h1>
             <p className="text-sm text-slate-500 mt-0.5">
               {isLoadingProfile ? 'Loading…' : `Welcome, ${profile?.name || user?.name} · ${batches.length} Batch${batches.length !== 1 ? 'es' : ''} Assigned`}
@@ -1538,6 +1601,147 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ defaultTab =
             )}
           </div>
         )}
+
+        {/* ══════════════════════════════════════════════════════════════════ */}
+        {/* GOOGLE CLASSROOM */}
+        {/* ══════════════════════════════════════════════════════════════════ */}
+        {activeTab === 'classroom' && (
+          <div className="space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200/80 shadow-soft">
+              <div>
+                <div className="flex items-center gap-2">
+                  <div className="p-2 bg-emerald-50 text-emerald-600 rounded-lg">
+                    <GraduationCap className="w-5 h-5" />
+                  </div>
+                  <h2 className="text-lg font-bold text-slate-900">Google Classroom Hub</h2>
+                </div>
+                <p className="text-sm text-slate-500 mt-1">
+                  Access your assigned Google Classrooms, review admin instructions, and direct student classwork.
+                </p>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={loadGoogleClassrooms}
+                className="gap-2 self-start sm:self-auto"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 ${isLoadingClassrooms ? 'animate-spin' : ''}`} />
+                Refresh
+              </Button>
+            </div>
+
+            {isLoadingClassrooms ? (
+              <LoadingSpinner />
+            ) : googleClassrooms.length === 0 ? (
+              <EmptyState
+                icon={<GraduationCap className="w-8 h-8" />}
+                title="No Google Classrooms Assigned"
+                description="Your administrator has not linked a Google Classroom to your assigned courses yet. Please check back soon or contact your administrator."
+              />
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                {googleClassrooms.map((c) => {
+                  const isCopied = copiedClassroomId === c._id;
+                  const hasPendingRequest = c.updateRequest && !c.updateRequest.resolved;
+
+                  return (
+                    <div
+                      key={c._id}
+                      className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-soft hover:shadow-card transition flex flex-col justify-between"
+                    >
+                      <div>
+                        <div className="flex items-start justify-between gap-2 mb-3">
+                          <Badge variant={c.status === 'ACTIVE' ? 'success' : 'neutral'} size="sm">
+                            {c.status === 'ACTIVE' ? 'Active' : 'Inactive'}
+                          </Badge>
+                          <span className="text-xs font-semibold px-2 py-0.5 rounded-md bg-brand-50 text-brand-700">
+                            {c.course?.category || 'Curriculum'}
+                          </span>
+                        </div>
+
+                        <h3 className="text-base font-bold text-slate-900 mb-1">{c.classroomName}</h3>
+                        <p className="text-xs text-slate-600 font-medium">
+                          Course: <span className="text-slate-900 font-bold">{c.course?.name || 'ALYSTRO Course'}</span>
+                        </p>
+                        <p className="text-xs text-slate-500 mt-1">
+                          Batch: <strong className="text-slate-700">{c.batch?.name}</strong> (Grade {c.batch?.grade} - Sec {c.batch?.section})
+                        </p>
+                        <p className="text-xs text-slate-500 mt-0.5">
+                          School: <span className="text-slate-700">{c.school?.name}</span>
+                        </p>
+                        <p className="text-xs text-slate-500 mt-0.5 flex items-center gap-1">
+                          <Users className="w-3.5 h-3.5 text-slate-400" />
+                          <span>{c.studentCount || 0} Students Enrolled</span>
+                        </p>
+
+                        {/* Admin Instructions Callout */}
+                        {c.instructions ? (
+                          <div className="mt-4 p-3 bg-emerald-50/60 rounded-xl border border-emerald-100/80 text-xs text-emerald-950">
+                            <div className="flex items-center gap-1.5 font-bold text-emerald-900 mb-1">
+                              <Info className="w-3.5 h-3.5 text-emerald-600" /> Admin Instructions:
+                            </div>
+                            <p className="text-[11px] leading-relaxed text-emerald-900/90">{c.instructions}</p>
+                          </div>
+                        ) : (
+                          <div className="mt-4 p-3 bg-slate-50 rounded-xl border border-slate-100 text-xs text-slate-400 italic">
+                            No special instructions provided by administrator.
+                          </div>
+                        )}
+
+                        {hasPendingRequest && (
+                          <div className="mt-3 p-2.5 bg-amber-50 rounded-xl border border-amber-200 text-xs text-amber-800">
+                            <span className="font-bold">Update Request Pending: </span>
+                            {c.updateRequest?.reason}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Card Actions */}
+                      <div className="mt-5 pt-4 border-t border-slate-100 space-y-2">
+                        <div className="flex items-center gap-2">
+                          <a
+                            href={c.classroomUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex-1 py-2 px-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 shadow-sm transition"
+                          >
+                            <ExternalLink className="w-3.5 h-3.5" />
+                            Open Classroom
+                          </a>
+                          <button
+                            onClick={() => {
+                              navigator.clipboard.writeText(c.classroomUrl);
+                              setCopiedClassroomId(c._id);
+                              setTimeout(() => setCopiedClassroomId(null), 2000);
+                            }}
+                            title="Copy Classroom URL"
+                            className="p-2 border border-slate-200 hover:border-slate-300 bg-slate-50 hover:bg-slate-100 text-slate-700 rounded-xl text-xs font-semibold flex items-center gap-1 transition"
+                          >
+                            {isCopied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                            <span>{isCopied ? 'Copied' : 'Copy'}</span>
+                          </button>
+                        </div>
+
+                        <button
+                          onClick={() => {
+                            setSelectedClassroomForRequest(c);
+                            setRequestReason('');
+                            setSuggestedUrlInput('');
+                            setRequestFeedback(null);
+                            setRequestUpdateOpen(true);
+                          }}
+                          className="w-full text-center text-xs text-slate-500 hover:text-brand-600 font-semibold py-1 hover:underline transition"
+                        >
+                          Request Link Update from Admin
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* ═══════════════════════════════════════════════════════════════════════ */}
@@ -1868,6 +2072,74 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ defaultTab =
               {classroomSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Save Classroom Link'}
             </Button>
           </div>
+        </form>
+      </Modal>
+
+      {/* Teacher: Request Classroom Link Update Modal */}
+      <Modal
+        isOpen={requestUpdateOpen}
+        onClose={() => setRequestUpdateOpen(false)}
+        title={`Request Classroom Link Update · ${selectedClassroomForRequest?.classroomName || ''}`}
+        subtitle="Submit a change request to the ALYSTRO administrator to review and update this classroom link."
+      >
+        <form onSubmit={handleSendUpdateRequest} className="space-y-4 pt-1">
+          {requestFeedback ? (
+            <div className="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl text-sm flex items-center gap-2">
+              <Check className="w-5 h-5 text-emerald-600" />
+              {requestFeedback}
+            </div>
+          ) : (
+            <>
+              <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700">
+                <p>
+                  <strong>Course:</strong> {selectedClassroomForRequest?.course?.name} ·{' '}
+                  <strong>Batch:</strong> {selectedClassroomForRequest?.batch?.name}
+                </p>
+                <p className="font-mono text-slate-500 mt-1 truncate">
+                  Current: {selectedClassroomForRequest?.classroomUrl}
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                  Reason for Update Request <span className="text-rose-500">*</span>
+                </label>
+                <textarea
+                  required
+                  rows={3}
+                  placeholder="e.g. A new Google Classroom was created for the semester, or the current link has expired."
+                  value={requestReason}
+                  onChange={(e) => setRequestReason(e.target.value)}
+                  className="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                  Suggested Google Classroom URL <span className="text-slate-400 font-normal">(Optional)</span>
+                </label>
+                <input
+                  type="url"
+                  placeholder="https://classroom.google.com/c/..."
+                  value={suggestedUrlInput}
+                  onChange={(e) => setSuggestedUrlInput(e.target.value)}
+                  className="w-full px-3 py-2 text-sm font-mono bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition"
+                />
+                <p className="text-[11px] text-slate-500 mt-1">
+                  If you already have the new HTTPS Google Classroom URL, paste it here for admin verification.
+                </p>
+              </div>
+
+              <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
+                <Button type="button" variant="ghost" onClick={() => setRequestUpdateOpen(false)}>
+                  Cancel
+                </Button>
+                <Button type="submit" variant="primary" disabled={isSubmittingRequest}>
+                  {isSubmittingRequest ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Submit Request'}
+                </Button>
+              </div>
+            </>
+          )}
         </form>
       </Modal>
     </div>

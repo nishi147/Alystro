@@ -15,6 +15,7 @@ import cmsRoutes from './cmsRoutes.js';
 import noticeRoutes from './noticeRoutes.js';
 import notificationRoutes from './notificationRoutes.js';
 import pricingRoutes from './pricingRoutes.js';
+import googleClassroomRoutes from './googleClassroomRoutes.js';
 
 const apiRouter = Router();
 
@@ -34,5 +35,7 @@ apiRouter.use('/cms', cmsRoutes);
 apiRouter.use('/notices', noticeRoutes);
 apiRouter.use('/notifications', notificationRoutes);
 apiRouter.use('/pricing', pricingRoutes);
+apiRouter.use('/google-classrooms', googleClassroomRoutes);
+
 
 export default apiRouter;
