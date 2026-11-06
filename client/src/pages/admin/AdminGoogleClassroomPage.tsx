@@ -58,10 +58,21 @@ export const AdminGoogleClassroomPage: React.FC = () => {
   // Dropdown reference data
   const [schools, setSchools] = useState<any[]>([]);
   const [courses, setCourses] = useState<any[]>([]);
-  const [batches, setBatches] = useState<any[]>([]);        // ALL batches (fallback)
-  const [filteredBatches, setFilteredBatches] = useState<any[]>([]);  // batches for current school+course
-  const [isBatchLoading, setIsBatchLoading] = useState(false);
+  const [batches, setBatches] = useState<any[]>([]);
+  const [isLoadingDependencies, setIsLoadingDependencies] = useState(false);
   const [teachers, setTeachers] = useState<any[]>([]);
+
+  // Quick Create Batch Modal state
+  const [isCreateBatchModalOpen, setIsCreateBatchModalOpen] = useState(false);
+  const [isCreatingBatch, setIsCreatingBatch] = useState(false);
+  const [quickBatchData, setQuickBatchData] = useState({
+    name: '',
+    schoolId: '',
+    programId: '',
+    grade: 'Class 7',
+    section: 'A',
+    teacherId: '',
+  });
 
   // Form fields
   const [formData, setFormData] = useState({
@@ -78,6 +89,22 @@ export const AdminGoogleClassroomPage: React.FC = () => {
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [feedbackMessage, setFeedbackMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  // Safe helper extractors for batch relationships
+  const getBatchSchoolId = (b: any): string => {
+    if (!b) return '';
+    return (b.school?._id ?? b.schoolId ?? b.school)?.toString() ?? '';
+  };
+
+  const getBatchProgramId = (b: any): string => {
+    if (!b) return '';
+    return (b.program?._id ?? b.programId ?? b.course?._id ?? b.courseId ?? b.program)?.toString() ?? '';
+  };
+
+  const getBatchTeacherId = (b: any): string => {
+    if (!b) return '';
+    return (b.teacher?._id ?? b.teacherId ?? b.teacher)?.toString() ?? '';
+  };
 
   // Load classrooms list
   const loadClassrooms = async () => {
@@ -97,20 +124,28 @@ export const AdminGoogleClassroomPage: React.FC = () => {
 
   // Load dropdown data (Schools, Courses, Batches, Teachers)
   const loadDependencies = async () => {
+    setIsLoadingDependencies(true);
     try {
       const [schoolsRes, coursesRes, batchesRes, teachersRes] = await Promise.all([
-        api.get('/schools').catch(() => ({ data: [] })),
+        api.get('/schools?limit=200').catch(() => ({ data: [] })),
         api.get('/programs').catch(() => ({ data: [] })),
         api.get('/batches').catch(() => ({ data: [] })),
         api.get('/teachers').catch(() => ({ data: [] })),
       ]);
 
-      if (schoolsRes.data) setSchools(schoolsRes.data);
-      if (coursesRes.data) setCourses(coursesRes.data);
-      if (batchesRes.data) setBatches(batchesRes.data);
-      if (teachersRes.data) setTeachers(teachersRes.data);
+      const schoolsList = Array.isArray(schoolsRes) ? schoolsRes : (schoolsRes?.data || []);
+      const coursesList = Array.isArray(coursesRes) ? coursesRes : (coursesRes?.data || []);
+      const batchesList = Array.isArray(batchesRes) ? batchesRes : (batchesRes?.data || []);
+      const teachersList = Array.isArray(teachersRes) ? teachersRes : (teachersRes?.data || []);
+
+      setSchools(schoolsList);
+      setCourses(coursesList);
+      setBatches(batchesList);
+      setTeachers(teachersList);
     } catch (err) {
       console.error('Error loading dropdown dependencies:', err);
+    } finally {
+      setIsLoadingDependencies(false);
     }
   };
 
@@ -124,54 +159,71 @@ export const AdminGoogleClassroomPage: React.FC = () => {
     setTimeout(() => setFeedbackMessage(null), 5000);
   };
 
-  // Fetch batches from the server scoped to a specific school (and optionally course)
-  const fetchBatchesForSelection = async (schoolId: string, courseId?: string) => {
-    if (!schoolId) { setFilteredBatches([]); return; }
-    setIsBatchLoading(true);
-    try {
-      // The /batches endpoint supports ?schoolId= for SUPER_ADMIN / ADMIN roles
-      const res = await api.get(`/batches?schoolId=${schoolId}`);
-      const all: any[] = res.data || [];
-      // Further filter client-side by program if courseId is provided
-      if (courseId) {
-        setFilteredBatches(
-          all.filter((b) => {
-            const bProgramId = (b.program?._id ?? b.program)?.toString() ?? '';
-            return bProgramId === courseId;
-          })
-        );
-      } else {
-        setFilteredBatches(all);
-      }
-    } catch {
-      // Fallback: use the already-loaded full batches list and filter client-side
-      const fallback = batches.filter((b) => {
-        const bSchoolId  = (b.school?._id  ?? b.school )?.toString()  ?? '';
-        const bProgramId = (b.program?._id ?? b.program)?.toString() ?? '';
-        const okSchool  = bSchoolId  === schoolId;
-        const okCourse  = !courseId  || bProgramId === courseId;
-        return okSchool && okCourse;
-      });
-      setFilteredBatches(fallback);
-    } finally {
-      setIsBatchLoading(false);
-    }
-  };
+  // Dynamically filter available batches based on current school and course selection
+  const availableBatches = useMemo(() => {
+    return batches.filter((b) => {
+      const bSchoolId = getBatchSchoolId(b);
+      const bProgramId = getBatchProgramId(b);
 
-  // Handlers for school / course select changes — reset batch and re-fetch
+      // If school is selected, must match
+      if (formData.schoolId && bSchoolId && bSchoolId !== formData.schoolId) {
+        return false;
+      }
+      // If course is selected, must match
+      if (formData.courseId && bProgramId && bProgramId !== formData.courseId) {
+        return false;
+      }
+      return true;
+    });
+  }, [batches, formData.schoolId, formData.courseId]);
+
+  // Ensure currently selected batch is always in the dropdown list (even in edit mode)
+  const batchesForDropdown = useMemo(() => {
+    if (formData.batchId && !availableBatches.some((b) => b._id === formData.batchId)) {
+      const current = batches.find((b) => b._id === formData.batchId);
+      if (current) return [current, ...availableBatches];
+    }
+    return availableBatches;
+  }, [availableBatches, formData.batchId, batches]);
+
+  // Handlers for school / course select changes
   const handleSchoolChange = (schoolId: string) => {
-    setFormData((prev) => ({ ...prev, schoolId, courseId: '', batchId: '', classroomName: '', teacherId: '' }));
-    setFilteredBatches([]);
-    if (schoolId) fetchBatchesForSelection(schoolId, '');
+    const currentBatch = batches.find((b) => b._id === formData.batchId);
+    const batchMatches = currentBatch && (!schoolId || getBatchSchoolId(currentBatch) === schoolId);
+
+    setFormData((prev) => ({
+      ...prev,
+      schoolId,
+      batchId: batchMatches ? prev.batchId : '',
+      classroomName: batchMatches ? prev.classroomName : '',
+    }));
+
+    setFormErrors((prev) => {
+      const next = { ...prev };
+      if (schoolId) delete next.schoolId;
+      if (!batchMatches) delete next.batchId;
+      return next;
+    });
   };
 
   const handleCourseChange = (courseId: string) => {
-    setFormData((prev) => ({ ...prev, courseId, batchId: '', classroomName: '', teacherId: '' }));
-    fetchBatchesForSelection(formData.schoolId, courseId);
-  };
+    const currentBatch = batches.find((b) => b._id === formData.batchId);
+    const batchMatches = currentBatch && (!courseId || getBatchProgramId(currentBatch) === courseId);
 
-  // The list used by the batch <select> — always the server-filtered set
-  const availableBatches = filteredBatches;
+    setFormData((prev) => ({
+      ...prev,
+      courseId,
+      batchId: batchMatches ? prev.batchId : '',
+      classroomName: batchMatches ? prev.classroomName : '',
+    }));
+
+    setFormErrors((prev) => {
+      const next = { ...prev };
+      if (courseId) delete next.courseId;
+      if (!batchMatches) delete next.batchId;
+      return next;
+    });
+  };
 
   // URL Validation helper
   const isGoogleClassroomUrlValid = (url: string): { isValid: boolean; error?: string } => {
@@ -194,30 +246,98 @@ export const AdminGoogleClassroomPage: React.FC = () => {
 
   const urlCheck = isGoogleClassroomUrlValid(formData.classroomUrl);
 
-  // Auto-fill classroom name & teacher when batch changes
+  // Auto-fill school, course, teacher & classroom name when batch changes
   const handleBatchChange = (batchId: string) => {
     const selectedBatch = batches.find((b) => b._id === batchId);
-    let updatedName = formData.classroomName;
+    let updatedSchoolId = formData.schoolId;
+    let updatedCourseId = formData.courseId;
     let updatedTeacher = formData.teacherId;
+    let updatedName = formData.classroomName;
 
     if (selectedBatch) {
+      const bSchoolId = getBatchSchoolId(selectedBatch);
+      const bProgramId = getBatchProgramId(selectedBatch);
+      const bTeacherId = getBatchTeacherId(selectedBatch);
+
+      if (bSchoolId) updatedSchoolId = bSchoolId;
+      if (bProgramId) updatedCourseId = bProgramId;
+      if (bTeacherId) updatedTeacher = bTeacherId;
+
       if (!isEditing || !formData.classroomName) {
         const courseName =
-          courses.find((c) => c._id === formData.courseId || c._id === selectedBatch.program?._id || c._id === selectedBatch.program)?.name ||
+          courses.find((c) => c._id === bProgramId || c._id === updatedCourseId)?.name ||
+          selectedBatch.program?.name ||
           'Classroom';
         updatedName = `${courseName} - ${selectedBatch.name}`;
-      }
-      if (selectedBatch.teacher?._id || selectedBatch.teacher) {
-        updatedTeacher = selectedBatch.teacher?._id || selectedBatch.teacher;
       }
     }
 
     setFormData((prev) => ({
       ...prev,
       batchId,
-      classroomName: updatedName,
+      schoolId: updatedSchoolId,
+      courseId: updatedCourseId,
       teacherId: updatedTeacher,
+      classroomName: updatedName,
     }));
+
+    // Clear any validation errors for auto-filled fields
+    setFormErrors((prev) => {
+      const next = { ...prev };
+      delete next.batchId;
+      if (updatedSchoolId) delete next.schoolId;
+      if (updatedCourseId) delete next.courseId;
+      if (updatedName) delete next.classroomName;
+      return next;
+    });
+  };
+
+  // Quick Create Batch Handlers
+  const openQuickCreateBatchModal = () => {
+    setQuickBatchData({
+      name: '',
+      schoolId: formData.schoolId || (schools[0]?._id ?? ''),
+      programId: formData.courseId || (courses[0]?._id ?? ''),
+      grade: 'Class 7',
+      section: 'A',
+      teacherId: formData.teacherId || '',
+    });
+    setIsCreateBatchModalOpen(true);
+  };
+
+  const handleQuickCreateBatch = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!quickBatchData.schoolId || !quickBatchData.programId || !quickBatchData.name.trim()) {
+      showFeedback('error', 'Please provide School, Course, and Batch Name.');
+      return;
+    }
+    setIsCreatingBatch(true);
+    try {
+      const res = await api.post('/batches', {
+        name: quickBatchData.name.trim(),
+        schoolId: quickBatchData.schoolId,
+        programId: quickBatchData.programId,
+        grade: quickBatchData.grade,
+        section: quickBatchData.section,
+        teacherId: quickBatchData.teacherId || undefined,
+      });
+
+      if (res.success && res.data) {
+        const created = res.data;
+        setBatches((prev) => [created, ...prev]);
+        setIsCreateBatchModalOpen(false);
+        showFeedback('success', `Batch "${created.name}" created and selected!`);
+
+        // Automatically select the newly created batch in the Google Classroom form
+        handleBatchChange(created._id);
+      } else {
+        showFeedback('error', res.message || 'Failed to create batch.');
+      }
+    } catch (err: any) {
+      showFeedback('error', err.message || 'Failed to create batch.');
+    } finally {
+      setIsCreatingBatch(false);
+    }
   };
 
   // Reset & Open Create Modal
@@ -225,7 +345,6 @@ export const AdminGoogleClassroomPage: React.FC = () => {
     setIsEditing(false);
     setEditingId(null);
     setFormErrors({});
-    setFilteredBatches([]);
     setFormData({
       schoolId: '',
       courseId: '',
@@ -256,8 +375,6 @@ export const AdminGoogleClassroomPage: React.FC = () => {
       status: c.status,
       instructions: c.instructions || '',
     });
-    // Pre-populate the filtered batches so the locked batch field still shows correctly
-    if (sId) fetchBatchesForSelection(sId, cId);
     setIsFormOpen(true);
   };
 
@@ -829,9 +946,7 @@ export const AdminGoogleClassroomPage: React.FC = () => {
               <select
                 value={formData.courseId}
                 disabled={isEditing}
-                onChange={(e) => {
-                  setFormData((prev) => ({ ...prev, courseId: e.target.value, batchId: '' }));
-                }}
+                onChange={(e) => handleCourseChange(e.target.value)}
                 className={`w-full px-3.5 py-2.5 text-sm bg-slate-50 border rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition ${
                   formErrors.courseId ? 'border-rose-400 bg-rose-50/20' : 'border-slate-200'
                 } ${isEditing ? 'opacity-70 cursor-not-allowed' : ''}`}
@@ -850,9 +965,33 @@ export const AdminGoogleClassroomPage: React.FC = () => {
           {/* Row 2: Batch & Assigned Teacher */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                Select Batch <span className="text-rose-500">*</span>
-              </label>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block text-xs font-bold text-slate-700">
+                  Select Batch <span className="text-rose-500">*</span>
+                </label>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => loadDependencies()}
+                    title="Refresh batches from database"
+                    className="text-[11px] text-slate-500 hover:text-brand-600 flex items-center gap-1 transition"
+                  >
+                    <RefreshCw className={`w-3 h-3 ${isLoadingDependencies ? 'animate-spin text-brand-600' : ''}`} />
+                    <span>Refresh</span>
+                  </button>
+                  {!isEditing && (
+                    <button
+                      type="button"
+                      onClick={openQuickCreateBatchModal}
+                      className="text-[11px] font-semibold text-brand-600 hover:text-brand-700 flex items-center gap-0.5 hover:underline"
+                    >
+                      <Plus className="w-3 h-3" />
+                      <span>New Batch</span>
+                    </button>
+                  )}
+                </div>
+              </div>
+
               <select
                 value={formData.batchId}
                 disabled={isEditing}
@@ -861,17 +1000,69 @@ export const AdminGoogleClassroomPage: React.FC = () => {
                   formErrors.batchId ? 'border-rose-400 bg-rose-50/20' : 'border-slate-200'
                 } ${isEditing ? 'opacity-70 cursor-not-allowed' : ''}`}
               >
-                <option value="">-- Choose Target Batch --</option>
-                {availableBatches.map((b) => (
-                  <option key={b._id} value={b._id}>
-                    {b.name} (Grade {b.grade} - Section {b.section})
-                  </option>
-                ))}
+                <option value="">
+                  {batches.length === 0
+                    ? '-- No Batches in System (Click "+ New Batch" above) --'
+                    : batchesForDropdown.length === 0
+                    ? '-- No Batches Match Selected Filters --'
+                    : `-- Choose Target Batch (${batchesForDropdown.length} available) --`}
+                </option>
+                {batchesForDropdown.map((b) => {
+                  const schoolName = b.school?.name || schools.find((s) => s._id === getBatchSchoolId(b))?.name;
+                  const courseName = b.program?.name || courses.find((c) => c._id === getBatchProgramId(b))?.name;
+                  const details = [
+                    schoolName ? `School: ${schoolName}` : '',
+                    courseName ? `Course: ${courseName}` : '',
+                  ].filter(Boolean).join(' | ');
+
+                  return (
+                    <option key={b._id} value={b._id}>
+                      {b.name} (Grade {b.grade} - Section {b.section}){details ? ` [${details}]` : ''}
+                    </option>
+                  );
+                })}
               </select>
+
               {formErrors.batchId && <p className="text-xs text-rose-600 mt-1">{formErrors.batchId}</p>}
-              {!isEditing && availableBatches.length === 0 && formData.schoolId && (
-                <p className="text-[11px] text-amber-600 mt-1">
-                  No batches found for this school and course combination.
+
+              {/* Status & Guidance messages below select */}
+              {batches.length === 0 && !isLoadingDependencies && (
+                <div className="mt-2 p-2.5 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-900 flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-1.5">
+                    <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
+                    <span>No batches found in the database.</span>
+                  </div>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    onClick={openQuickCreateBatchModal}
+                    className="text-xs py-1 px-2.5 h-auto font-semibold text-amber-900 border-amber-300 hover:bg-amber-100"
+                  >
+                    + Create First Batch
+                  </Button>
+                </div>
+              )}
+
+              {!isEditing && batches.length > 0 && batchesForDropdown.length === 0 && (
+                <div className="mt-2 p-2 bg-slate-100 border border-slate-200 rounded-xl text-xs text-slate-700 flex items-center justify-between gap-2">
+                  <span className="text-[11px]">
+                    No batches match {formData.schoolId && formData.courseId ? 'selected School & Course' : formData.schoolId ? 'this School' : 'this Course'}.
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setFormData((prev) => ({ ...prev, schoolId: '', courseId: '' }))}
+                    className="text-xs font-bold text-brand-600 hover:text-brand-800 underline shrink-0"
+                  >
+                    Clear Filters ({batches.length} total)
+                  </button>
+                </div>
+              )}
+
+              {formData.batchId && (
+                <p className="text-[11px] text-emerald-600 font-medium mt-1 flex items-center gap-1">
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  Batch selected & school/course auto-linked.
                 </p>
               )}
             </div>
@@ -886,11 +1077,16 @@ export const AdminGoogleClassroomPage: React.FC = () => {
                 className="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition"
               >
                 <option value="">-- Auto (Batch Lead Instructor) --</option>
-                {teachers.map((t) => (
-                  <option key={t.user?._id || t._id} value={t.user?._id || t._id}>
-                    {t.name || t.user?.name} ({t.user?.email || t.email})
-                  </option>
-                ))}
+                {teachers.map((t) => {
+                  const teacherUserId = t.userId || t.user?._id || (typeof t.user === 'string' ? t.user : '') || t._id;
+                  const displayName = t.name || t.user?.name || 'Instructor';
+                  const displayEmail = t.email || t.user?.email ? ` (${t.email || t.user?.email})` : '';
+                  return (
+                    <option key={t._id || teacherUserId} value={teacherUserId}>
+                      {displayName}{displayEmail}
+                    </option>
+                  );
+                })}
               </select>
             </div>
           </div>
@@ -1221,6 +1417,129 @@ export const AdminGoogleClassroomPage: React.FC = () => {
           </div>
         </Modal>
       )}
+
+      {/* ───────────────────────────────────────────────────────────── */}
+      {/* MODAL: QUICK CREATE BATCH                                      */}
+      {/* ───────────────────────────────────────────────────────────── */}
+      <Modal
+        isOpen={isCreateBatchModalOpen}
+        onClose={() => setIsCreateBatchModalOpen(false)}
+        title="Quick Create Batch"
+        subtitle="Create a new batch and automatically associate it with your Google Classroom."
+        maxWidth="md"
+        isSubmitting={isCreatingBatch}
+      >
+        <form onSubmit={handleQuickCreateBatch} className="space-y-4 pt-1">
+          <div>
+            <label className="block text-xs font-bold text-slate-700 mb-1.5">
+              School <span className="text-rose-500">*</span>
+            </label>
+            <select
+              value={quickBatchData.schoolId}
+              onChange={(e) => setQuickBatchData((prev) => ({ ...prev, schoolId: e.target.value }))}
+              required
+              className="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition"
+            >
+              <option value="">-- Choose School --</option>
+              {schools.map((s) => (
+                <option key={s._id} value={s._id}>
+                  {s.name} ({s.code || 'SCH'})
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold text-slate-700 mb-1.5">
+              Course (Program) <span className="text-rose-500">*</span>
+            </label>
+            <select
+              value={quickBatchData.programId}
+              onChange={(e) => setQuickBatchData((prev) => ({ ...prev, programId: e.target.value }))}
+              required
+              className="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition"
+            >
+              <option value="">-- Choose Course --</option>
+              {courses.map((c) => (
+                <option key={c._id} value={c._id}>
+                  {c.name} ({c.category || 'STEM'})
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold text-slate-700 mb-1.5">
+              Batch Name <span className="text-rose-500">*</span>
+            </label>
+            <input
+              type="text"
+              required
+              placeholder="e.g. AI & Robotics 101 - Alpha"
+              value={quickBatchData.name}
+              onChange={(e) => setQuickBatchData((prev) => ({ ...prev, name: e.target.value }))}
+              className="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition"
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1.5">Grade Level</label>
+              <input
+                type="text"
+                placeholder="e.g. Class 7 or Grade 10"
+                value={quickBatchData.grade}
+                onChange={(e) => setQuickBatchData((prev) => ({ ...prev, grade: e.target.value }))}
+                className="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1.5">Section</label>
+              <input
+                type="text"
+                placeholder="e.g. A"
+                value={quickBatchData.section}
+                onChange={(e) => setQuickBatchData((prev) => ({ ...prev, section: e.target.value }))}
+                className="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold text-slate-700 mb-1.5">Lead Instructor / Mentor</label>
+            <select
+              value={quickBatchData.teacherId}
+              onChange={(e) => setQuickBatchData((prev) => ({ ...prev, teacherId: e.target.value }))}
+              className="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition"
+            >
+              <option value="">-- Optional: Assign Later --</option>
+              {teachers.map((t) => {
+                const teacherUserId = t.userId || t.user?._id || (typeof t.user === 'string' ? t.user : '') || t._id;
+                const displayName = t.name || t.user?.name || 'Instructor';
+                return (
+                  <option key={t._id || teacherUserId} value={teacherUserId}>
+                    {displayName}
+                  </option>
+                );
+              })}
+            </select>
+          </div>
+
+          <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+            <Button type="button" variant="ghost" onClick={() => setIsCreateBatchModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              variant="primary"
+              disabled={isCreatingBatch}
+              className="bg-brand-600 hover:bg-brand-700 text-white"
+            >
+              {isCreatingBatch ? 'Creating Batch...' : 'Create & Select Batch'}
+            </Button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 };

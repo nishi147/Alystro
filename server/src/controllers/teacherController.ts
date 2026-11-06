@@ -37,6 +37,8 @@ export async function getTeachers(req: AuthenticatedRequest, res: Response): Pro
       .filter((t) => t.user)
       .map((t: any) => ({
         _id: t._id,
+        userId: t.user?._id || t.user,
+        user: t.user,
         name: t.user?.name,
         email: t.user?.email,
         phone: t.user?.phone,

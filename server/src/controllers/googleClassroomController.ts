@@ -7,6 +7,7 @@ import { Program } from '../models/Program.js';
 import { Batch } from '../models/Batch.js';
 import { Student } from '../models/Student.js';
 import { User } from '../models/User.js';
+import { Teacher } from '../models/Teacher.js';
 import { Notification } from '../models/Notification.js';
 import { validateStrictGoogleClassroomUrl } from '../utils/validators.js';
 
@@ -284,13 +285,39 @@ export async function createGoogleClassroom(req: AuthenticatedRequest, res: Resp
         res.status(400).json({ success: false, message: 'Invalid Teacher ID.' });
         return;
       }
-      const teacherUser = await User.findById(finalTeacherId);
-      if (!teacherUser || (teacherUser.role !== 'TEACHER' && teacherUser.role !== 'SUPER_ADMIN')) {
+      let teacherUser = await User.findById(finalTeacherId);
+      // Fallback: check if finalTeacherId was passed as a Teacher document ID rather than User ID
+      if (!teacherUser) {
+        const teacherDoc = await Teacher.findById(finalTeacherId);
+        if (teacherDoc?.user) {
+          teacherUser = await User.findById(teacherDoc.user);
+          finalTeacherId = teacherDoc.user;
+        }
+      }
+
+      if (!teacherUser) {
+        res.status(400).json({ success: false, message: 'Assigned teacher user account not found.' });
+        return;
+      }
+
+      if (
+        teacherUser.role !== 'TEACHER' &&
+        teacherUser.role !== 'SUPER_ADMIN' &&
+        teacherUser.role !== 'ADMIN' &&
+        teacherUser.role !== 'SCHOOL_ADMIN'
+      ) {
         res.status(400).json({ success: false, message: 'Assigned teacher must have the TEACHER role.' });
         return;
       }
     } else if (batchDoc.teacher) {
       finalTeacherId = batchDoc.teacher;
+      let teacherUser = await User.findById(finalTeacherId);
+      if (!teacherUser) {
+        const teacherDoc = await Teacher.findById(finalTeacherId);
+        if (teacherDoc?.user) {
+          finalTeacherId = teacherDoc.user;
+        }
+      }
     }
 
     const newClassroom = await GoogleClassroom.create({
@@ -400,7 +427,20 @@ export async function updateGoogleClassroom(req: AuthenticatedRequest, res: Resp
           res.status(400).json({ success: false, message: 'Invalid Teacher ID.' });
           return;
         }
-        classroom.teacher = newTeacherId;
+        let resolvedTeacherUserId = newTeacherId;
+        let teacherUser = await User.findById(newTeacherId);
+        if (!teacherUser) {
+          const teacherDoc = await Teacher.findById(newTeacherId);
+          if (teacherDoc?.user) {
+            resolvedTeacherUserId = teacherDoc.user;
+            teacherUser = await User.findById(teacherDoc.user);
+          }
+        }
+        if (!teacherUser) {
+          res.status(400).json({ success: false, message: 'Assigned teacher user account not found.' });
+          return;
+        }
+        classroom.teacher = resolvedTeacherUserId;
       }
     }
 
