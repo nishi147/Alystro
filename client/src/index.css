@@ -30,14 +30,98 @@
   background: linear-gradient(135deg, #060D1A 0%, #0B1B3D 50%, #142C61 100%);
 }
 
+/* Hero section - deep navy background */
+.bg-hero-dark {
+  background: linear-gradient(160deg, #06152F 0%, #081B3A 55%, #0a2040 100%);
+}
+
 .bg-hero-glow {
   background: radial-gradient(circle at 50% 30%, rgba(37, 99, 235, 0.15), transparent 70%);
+}
+
+/* Hero right-side blue glow behind the classroom image */
+.bg-hero-image-glow {
+  background: radial-gradient(ellipse at 65% 50%, rgba(22, 139, 255, 0.18) 0%, rgba(69, 182, 255, 0.08) 40%, transparent 70%);
 }
 
 .text-gradient {
   background: linear-gradient(135deg, #38BDF8 0%, #60A5FA 50%, #BFDBFE 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+}
+
+/* Blue gradient text for hero "Real Digital Skills" line */
+.text-hero-gradient {
+  background: linear-gradient(90deg, #168BFF 0%, #45B6FF 60%, #7DD3FC 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Hero animations */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeInRight {
+  from { opacity: 0; transform: translateX(24px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.anim-fade-up {
+  animation: fadeInUp 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.anim-fade-up-d1 {
+  animation: fadeInUp 0.65s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both;
+}
+.anim-fade-up-d2 {
+  animation: fadeInUp 0.65s cubic-bezier(0.22, 1, 0.36, 1) 0.2s both;
+}
+.anim-fade-up-d3 {
+  animation: fadeInUp 0.65s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both;
+}
+.anim-fade-up-d4 {
+  animation: fadeInUp 0.65s cubic-bezier(0.22, 1, 0.36, 1) 0.4s both;
+}
+.anim-fade-right {
+  animation: fadeInRight 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.25s both;
+}
+.anim-fade-in-d5 {
+  animation: fadeIn 0.6s ease-out 0.5s both;
+}
+
+/* Respect prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .anim-fade-up,
+  .anim-fade-up-d1,
+  .anim-fade-up-d2,
+  .anim-fade-up-d3,
+  .anim-fade-up-d4,
+  .anim-fade-right,
+  .anim-fade-in-d5 {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Hero wave curve at bottom */
+.hero-wave {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  overflow: hidden;
+  line-height: 0;
+  pointer-events: none;
+}
+.hero-wave svg {
+  display: block;
+  width: 100%;
 }
 
 /* Hide scrollbar for touch carousel sliders */

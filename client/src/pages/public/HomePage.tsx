@@ -2,11 +2,9 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Sparkles,
-  Play,
   ArrowRight,
   Video,
   Code2,
-  Lightbulb,
   CheckCircle2,
   Award,
   ChevronDown,
@@ -15,15 +13,21 @@ import {
   Calendar,
   Monitor,
   Briefcase,
+  Users,
+  Layers,
+  TrendingUp,
+  School,
 } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/Badge';
 import { Card } from '../../components/ui/Card';
 import { BookDemoModal } from '../../components/modals/BookDemoModal';
 
+// ── Hero classroom photo — replace this path to swap the image easily ──────────
+const HERO_CLASSROOM_IMAGE = '/images/indian_classroom_workshop.jpg';
+
 export const HomePage: React.FC = () => {
   const [demoModalOpen, setDemoModalOpen] = useState(false);
-  const [videoModalOpen, setVideoModalOpen] = useState(false);
   const [activeFaq, setActiveFaq] = useState<number | null>(0);
 
   const stats = [
@@ -177,92 +181,152 @@ export const HomePage: React.FC = () => {
     },
   ];
 
+  // Hero feature highlights
+  const heroFeatures = [
+    { icon: <Users className="w-6 h-6 text-white" />, label: 'Live Classes' },
+    { icon: <Layers className="w-6 h-6 text-white" />, label: 'Hands-on Projects' },
+    { icon: <Award className="w-6 h-6 text-white" />, label: 'Recognized Certificates' },
+    { icon: <TrendingUp className="w-6 h-6 text-white" />, label: 'Future-Ready Career Skills' },
+  ];
+
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
-      {/* 1. Hero Section */}
-      <section className="relative bg-navy-gradient text-white pt-12 pb-20 lg:pt-20 lg:pb-32 overflow-hidden border-b border-navy-800">
-        <div className="absolute inset-0 bg-hero-glow pointer-events-none" />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
-            <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
-              <div className="inline-flex flex-wrap items-center justify-center lg:justify-start gap-2">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 backdrop-blur-sm border border-white/15 text-xs font-semibold text-brand-300">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                  Live Sessions
-                </span>
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 backdrop-blur-sm border border-white/15 text-xs font-semibold text-brand-200">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-brand-400" />
-                  Practical Projects
-                </span>
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 backdrop-blur-sm border border-white/15 text-xs font-semibold text-brand-200">
-                  <Award className="w-3.5 h-3.5 text-amber-400" />
-                  Certificates
-                </span>
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 backdrop-blur-sm border border-emerald-400/30 text-xs font-semibold text-emerald-300">
-                  <Gift className="w-3.5 h-3.5 text-emerald-400" />
-                  3-Day FREE Demo
+      {/* ═══════════════════════════════════════════════════════════
+          1. HERO SECTION — Premium dark navy EdTech redesign
+         ═══════════════════════════════════════════════════════════ */}
+      <section className="relative bg-hero-dark text-white overflow-hidden" style={{ minHeight: '100svh' }}>
+        {/* Background radial glows */}
+        <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+          {/* Centre-left subtle glow */}
+          <div className="absolute top-0 left-0 w-[55%] h-full bg-[radial-gradient(ellipse_at_30%_40%,rgba(22,139,255,0.10),transparent_65%)]" />
+          {/* Right-side blue glow near classroom image */}
+          <div className="absolute top-0 right-0 w-[60%] h-full bg-[radial-gradient(ellipse_at_75%_45%,rgba(69,182,255,0.14),transparent_60%)]" />
+        </div>
+
+        {/* Main hero content */}
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-14 pb-0 lg:pt-20">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-6 items-center">
+
+            {/* ── LEFT COLUMN ── */}
+            <div className="space-y-6 text-center lg:text-left lg:pr-8">
+
+              {/* Badge pill */}
+              <div className="anim-fade-up inline-flex justify-center lg:justify-start">
+                <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-brand-500/40 bg-brand-500/10 text-sm font-semibold text-brand-200 backdrop-blur-sm">
+                  🎓 Future-Ready Skills for Classes 6–12
                 </span>
               </div>
 
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.1] font-display">
-                Future Skills Program{' '}
-                <span className="text-gradient">For The Next Generation</span>
-              </h1>
+              {/* Main headline */}
+              <div className="anim-fade-up-d1">
+                <h1 className="font-extrabold font-display tracking-tight leading-[1.08]">
+                  <span className="block text-4xl sm:text-5xl lg:text-6xl text-white">
+                    Learn • Create • Build
+                  </span>
+                  <span className="block text-4xl sm:text-5xl lg:text-6xl text-hero-gradient mt-1">
+                    Real Digital Skills
+                  </span>
+                </h1>
+                {/* Blue underline accent */}
+                <div className="mt-4 flex justify-center lg:justify-start">
+                  <div className="h-1 w-20 rounded-full bg-gradient-to-r from-brand-500 to-brand-accent opacity-80" />
+                </div>
+              </div>
 
-              <p className="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-normal">
-                AI • Coding • Video Editing • Freelancing — A practical 3-month digital skills journey for students of Classes 6 to 12.{' '}
-                <span className="text-brand-300 font-medium">Helping Students Learn Today, Create Tomorrow & Grow with Confidence.</span>
+              {/* Skills bar */}
+              <p className="anim-fade-up-d2 text-base sm:text-lg font-semibold text-slate-200 tracking-wide">
+                Coding&nbsp;
+                <span className="text-brand-400 mx-1">|</span>
+                &nbsp;Video Editing&nbsp;
+                <span className="text-brand-400 mx-1">|</span>
+                &nbsp;Digital Creativity&nbsp;
+                <span className="text-brand-400 mx-1">|</span>
+                &nbsp;Freelancing
               </p>
 
-              <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-2">
-                <Button
-                  variant="primary"
-                  size="lg"
+              {/* Description */}
+              <p className="anim-fade-up-d3 text-sm sm:text-base text-slate-300 max-w-lg mx-auto lg:mx-0 leading-relaxed">
+                A practical 3-month skills program that helps students explore technology, build real projects and grow with confidence.
+              </p>
+
+              {/* CTA Buttons */}
+              <div className="anim-fade-up-d4 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 sm:gap-4 pt-1">
+                {/* Primary CTA */}
+                <button
+                  type="button"
                   onClick={() => setDemoModalOpen(true)}
-                  className="w-full sm:w-auto px-8 shadow-xl shadow-brand-500/30"
-                  rightIcon={<ArrowRight className="w-4 h-4" />}
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-xl bg-brand-500 hover:bg-brand-400 text-white font-bold text-sm sm:text-base shadow-lg shadow-brand-500/40 hover:shadow-brand-400/50 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 focus-visible:ring-offset-navy-900"
                 >
+                  <Calendar className="w-4 h-4 shrink-0" />
                   Book Free 3-Day Demo
-                </Button>
+                  <ArrowRight className="w-4 h-4 shrink-0" />
+                </button>
+
+                {/* Secondary CTA */}
                 <Link to="/for-schools" className="w-full sm:w-auto">
-                  <Button
-                    variant="outline"
-                    size="lg"
-                    className="w-full sm:w-auto px-7 bg-white/10 text-white border-white/20 hover:bg-white/20 hover:text-white"
+                  <button
+                    type="button"
+                    className="w-full inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-xl border border-white/25 bg-white/8 hover:bg-white/14 hover:border-white/40 text-white font-bold text-sm sm:text-base backdrop-blur-sm hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40 focus-visible:ring-offset-2 focus-visible:ring-offset-navy-900"
+                    style={{ background: 'rgba(255,255,255,0.07)' }}
                   >
+                    <School className="w-4 h-4 shrink-0" />
                     Partner With Your School
-                  </Button>
+                  </button>
                 </Link>
               </div>
             </div>
 
-            <div className="lg:col-span-5 relative">
-              <div className="relative rounded-3xl overflow-hidden border-2 border-white/20 shadow-2xl bg-navy-900 group">
+            {/* ── RIGHT COLUMN – Classroom photograph ── */}
+            <div className="anim-fade-right relative flex items-center justify-center lg:justify-end">
+              {/* Soft blue shadow blob behind image */}
+              <div
+                className="absolute inset-0 rounded-[2.5rem] blur-3xl opacity-30 pointer-events-none"
+                style={{ background: 'radial-gradient(ellipse at center, #168BFF 0%, #45B6FF 50%, transparent 80%)' }}
+                aria-hidden="true"
+              />
+              {/* Image container */}
+              <div className="relative w-full max-w-[560px] rounded-[2rem] overflow-hidden border-2 border-white/15 shadow-2xl shadow-brand-900/60 group">
                 <img
-                  src="/images/indian_classroom_workshop.jpg"
-                  alt="Indian students collaborating in smart computer lab during ALYSTRO workshop"
-                  className="w-full h-80 sm:h-96 object-cover transform group-hover:scale-105 transition-transform duration-500"
+                  src={HERO_CLASSROOM_IMAGE}
+                  alt="Indian school students collaborating on laptops during an ALYSTRO live class"
+                  className="w-full h-72 sm:h-[400px] lg:h-[460px] object-cover object-center group-hover:scale-[1.03] transition-transform duration-700 ease-out"
+                  loading="eager"
+                  decoding="async"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-navy-950 via-navy-950/40 to-transparent" />
-                <button
-                  type="button"
-                  onClick={() => setVideoModalOpen(true)}
-                  className="absolute inset-0 m-auto w-16 h-16 rounded-full bg-brand-500/90 text-white flex items-center justify-center shadow-2xl backdrop-blur-sm group-hover:scale-110 hover:bg-brand-400 transition-all focus:outline-none ring-4 ring-white/30"
-                  aria-label="Play Overview Video"
-                >
-                  <Play className="w-7 h-7 fill-white ml-1" />
-                </button>
-                <div className="absolute bottom-5 left-5 right-5 text-left">
-                  <span className="text-[11px] uppercase tracking-widest text-brand-300 font-bold">
-                    Classroom Workshop in Action
-                  </span>
-                  <p className="text-sm font-semibold text-white">
-                    Watch how students build real AI stories and video reels
-                  </p>
-                </div>
+                {/* Subtle bottom fade to blend into navy background */}
+                <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#06152F]/80 to-transparent pointer-events-none" />
               </div>
             </div>
+
           </div>
+        </div>
+
+        {/* ── FEATURE HIGHLIGHTS BAR ── */}
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 lg:mt-14 pb-10">
+          <div className="anim-fade-in-d5 grid grid-cols-2 lg:grid-cols-4 gap-px bg-white/10 rounded-2xl overflow-hidden border border-white/10 shadow-inner">
+            {heroFeatures.map((feat, idx) => (
+              <div
+                key={feat.label}
+                className={`flex flex-col items-center gap-3 py-7 px-5 bg-white/5 hover:bg-white/10 transition-colors ${
+                  idx < heroFeatures.length - 1 ? 'lg:border-r lg:border-white/10' : ''
+                } ${idx < 2 ? 'border-b border-white/10 lg:border-b-0' : ''}`}
+              >
+                <div className="w-11 h-11 rounded-xl bg-brand-500/25 border border-brand-400/20 flex items-center justify-center shrink-0">
+                  {feat.icon}
+                </div>
+                <span className="text-xs sm:text-sm font-bold text-white text-center leading-snug">
+                  {feat.label}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Bottom wave SVG */}
+        <div className="hero-wave" aria-hidden="true">
+          <svg viewBox="0 0 1440 56" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" height="56">
+            <path d="M0,32 C240,56 480,8 720,32 C960,56 1200,8 1440,32 L1440,56 L0,56 Z" fill="#f8fafc" />
+          </svg>
         </div>
       </section>
 
