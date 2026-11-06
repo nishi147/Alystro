@@ -14,7 +14,6 @@ import {
   CheckSquare,
   HelpCircle,
   Video,
-  PlayCircle,
   FolderDown,
   User,
   Users,
@@ -35,7 +34,6 @@ import {
   Search,
   Check,
   X,
-  Play,
   Share2,
   Copy,
   GraduationCap,
@@ -57,7 +55,6 @@ export type StudentTab =
   | 'batch'
   | 'live-classes'
   | 'schedule'
-  | 'recordings'
   | 'materials'
   | 'assignments'
   | 'quizzes'
@@ -81,7 +78,6 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ defaultTab =
   const [batchData, setBatchData] = useState<any>(null);
   const [courseData, setCourseData] = useState<any>(null);
   const [liveSessions, setLiveSessions] = useState<any[]>([]);
-  const [recordings, setRecordings] = useState<any[]>([]);
   const [materials, setMaterials] = useState<any[]>([]);
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [quizzes, setQuizzes] = useState<Quiz[]>([]);
@@ -96,7 +92,11 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ defaultTab =
   // Sync tab with props
   useEffect(() => {
     if (defaultTab) {
-      setActiveTab(defaultTab);
+      if ((defaultTab as any) === 'recordings') {
+        setActiveTab('live-classes');
+      } else {
+        setActiveTab(defaultTab);
+      }
     }
   }, [defaultTab]);
 
@@ -114,10 +114,6 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ defaultTab =
   const [quizTimer, setQuizTimer] = useState<number>(0);
   const [quizResult, setQuizResult] = useState<any | null>(null);
   const [isSubmittingQuiz, setIsSubmittingQuiz] = useState(false);
-
-  // Video Player Modal
-  const [videoModalOpen, setVideoModalOpen] = useState(false);
-  const [activeRecording, setActiveRecording] = useState<any | null>(null);
 
   // Edit Profile Modal
   const [editProfileModalOpen, setEditProfileModalOpen] = useState(false);
@@ -167,7 +163,6 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ defaultTab =
         batchRes,
         courseRes,
         liveRes,
-        recRes,
         matRes,
         asgRes,
         quizRes,
@@ -180,7 +175,6 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ defaultTab =
         api.get('/students/me/batch').catch(() => ({ success: false })),
         api.get('/students/me/course').catch(() => ({ success: false })),
         api.get('/students/me/live-classes').catch(() => ({ success: false })),
-        api.get('/students/me/recordings').catch(() => ({ success: false })),
         api.get('/students/me/materials').catch(() => ({ success: false })),
         api.get('/assignments').catch(() => ({ success: false })),
         api.get('/quizzes').catch(() => ({ success: false })),
@@ -203,7 +197,6 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ defaultTab =
       if (batchRes.success) setBatchData(batchRes.data);
       if (courseRes.success) setCourseData(courseRes.data);
       if (liveRes.success) setLiveSessions(liveRes.data || []);
-      if (recRes.success) setRecordings(recRes.data || []);
       if (matRes.success) setMaterials(matRes.data || []);
       if (asgRes.success) setAssignments(asgRes.data || []);
       if (quizRes.success) setQuizzes(quizRes.data || []);
@@ -407,7 +400,6 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ defaultTab =
             { id: 'batch', label: 'My Batch', icon: Layers },
             { id: 'live-classes', label: 'Live Classes', icon: Video },
             { id: 'schedule', label: 'Schedule', icon: CalendarCheck },
-            { id: 'recordings', label: 'Recorded Classes', icon: PlayCircle },
             { id: 'materials', label: 'Study Materials', icon: FolderDown },
             { id: 'assignments', label: `Assignments (${assignments.length})`, icon: FileText },
             { id: 'quizzes', label: `Tests & Quizzes (${quizzes.length})`, icon: CheckSquare },
@@ -1010,49 +1002,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ defaultTab =
       )}
 
       {/* ========================================================= */}
-      {/* TAB 5: RECORDED CLASSES                                   */}
-      {/* ========================================================= */}
-      {activeTab === 'recordings' && (
-        <div className="space-y-6">
-          <div>
-            <h3 className="text-base font-bold text-navy-950 font-display">Archived Lecture Masterclasses</h3>
-            <p className="text-xs text-slate-500">Rewatch completed sessions and review core programming concepts.</p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {recordings.map((rec) => (
-              <div key={rec.id} className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-soft flex flex-col justify-between">
-                <div>
-                  <div className="relative aspect-video bg-navy-950 flex items-center justify-center group cursor-pointer" onClick={() => { setActiveRecording(rec); setVideoModalOpen(true); }}>
-                    <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md text-white flex items-center justify-center transition group-hover:scale-110 shadow-lg">
-                      <Play className="w-5 h-5 fill-white ml-0.5" />
-                    </div>
-                    <span className="absolute bottom-2 right-2 px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-black/70 text-white">
-                      {rec.durationMinutes} mins
-                    </span>
-                  </div>
-                  <div className="p-5">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-brand-600 bg-brand-50 px-2 py-0.5 rounded">
-                      Month {rec.month} • {rec.module}
-                    </span>
-                    <h4 className="font-bold text-navy-950 text-sm mt-2">{rec.title}</h4>
-                    <p className="text-[11px] text-slate-400 mt-1">Recorded: {new Date(rec.recordedDate).toLocaleDateString()}</p>
-                  </div>
-                </div>
-
-                <div className="p-5 pt-0">
-                  <Button variant="outline" size="sm" className="w-full" onClick={() => { setActiveRecording(rec); setVideoModalOpen(true); }}>
-                    Play Recording
-                  </Button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* ========================================================= */}
-      {/* TAB 6: STUDY MATERIALS                                    */}
+      {/* TAB 5: STUDY MATERIALS                                    */}
       {/* ========================================================= */}
       {activeTab === 'materials' && (
         <div className="space-y-6">
@@ -1331,7 +1281,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ defaultTab =
             <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-soft">
               <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Present Sessions</span>
               <p className="text-3xl font-extrabold text-emerald-600 font-display mt-2">
-                {attendanceData?.presentSessions || 0}
+                {attendanceData?.hasSessions ? (attendanceData?.presentSessions ?? 0) : '—'}
               </p>
               <p className="text-xs text-emerald-600 font-semibold mt-1">Verified In-Lab Sessions</p>
             </div>
@@ -1339,7 +1289,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ defaultTab =
             <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-soft">
               <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Absent / Leave</span>
               <p className="text-3xl font-extrabold text-rose-600 font-display mt-2">
-                {attendanceData?.absentSessions || 0}
+                {attendanceData?.hasSessions ? (attendanceData?.absentSessions ?? 0) : '—'}
               </p>
               <p className="text-xs text-slate-500 font-semibold mt-1">Unattended Sessions</p>
             </div>
@@ -1378,7 +1328,9 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ defaultTab =
                   ) : (
                     <tr>
                       <td colSpan={4} className="py-12 text-center text-slate-400">
-                        No attendance records logged yet for your student profile.
+                        <UserCheck className="w-8 h-8 text-slate-300 mx-auto mb-2" />
+                        <p className="font-semibold text-slate-600">No attendance records logged yet</p>
+                        <p className="text-xs text-slate-400 mt-0.5">Official attendance records will appear here as your batch instructor logs class sessions.</p>
                       </td>
                     </tr>
                   )}
@@ -1734,35 +1686,6 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ defaultTab =
               </div>
             </div>
           )}
-        </Modal>
-      )}
-
-      {/* Modal: Watch Recording */}
-      {activeRecording && (
-        <Modal
-          isOpen={videoModalOpen}
-          onClose={() => setVideoModalOpen(false)}
-          title={activeRecording.title}
-          subtitle={`Duration: ${activeRecording.durationMinutes} mins • ${activeRecording.module}`}
-          maxWidth="2xl"
-        >
-          <div className="space-y-4">
-            <div className="aspect-video bg-navy-950 rounded-xl overflow-hidden flex items-center justify-center">
-              <iframe
-                src={activeRecording.videoUrl}
-                title={activeRecording.title}
-                className="w-full h-full border-0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
-            </div>
-            <div className="flex justify-between items-center text-xs text-slate-500">
-              <span>Instructor: {activeRecording.instructor}</span>
-              <Button variant="outline" size="sm" onClick={() => setVideoModalOpen(false)}>
-                Close Player
-              </Button>
-            </div>
-          </div>
         </Modal>
       )}
 

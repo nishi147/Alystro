@@ -450,7 +450,7 @@ const AppContent: React.FC = () => {
           path="/student/recordings"
           element={
             <ProtectedRoute allowedRoles={['STUDENT', 'SUPER_ADMIN']}>
-              <StudentDashboard defaultTab="recordings" />
+              <Navigate to="/student/live-classes" replace />
             </ProtectedRoute>
           }
         />

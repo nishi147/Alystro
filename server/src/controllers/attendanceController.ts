@@ -88,7 +88,7 @@ export async function markAttendance(req: AuthenticatedRequest, res: Response): 
           }
         }
       });
-      const rate = totalCount > 0 ? Math.round((presentCount / totalCount) * 100) : 100;
+      const rate = totalCount > 0 ? Math.round((presentCount / totalCount) * 100) : 0;
       await Student.findByIdAndUpdate(studentId, { attendanceRate: rate });
     }
 
@@ -127,7 +127,7 @@ export async function getStudentAttendanceSummary(req: AuthenticatedRequest, res
 
     const totalSessions = history.length;
     const presentSessions = history.filter((h) => h.status === 'PRESENT' || h.status === 'LATE').length;
-    const rate = totalSessions > 0 ? Math.round((presentSessions / totalSessions) * 100) : 0;
+    const rate = totalSessions > 0 ? Math.round((presentSessions / totalSessions) * 100) : null;
 
     res.json({
       success: true,

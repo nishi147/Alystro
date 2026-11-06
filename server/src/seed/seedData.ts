@@ -714,7 +714,7 @@ export async function seedDatabase() {
       program: foundationProgram._id,
       parentName: 'Sanjay Sharma',
       parentPhone: '+91 98290 88776',
-      attendanceRate: 94,
+      attendanceRate: 0,
       avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&q=80&w=200',
     },
     {
@@ -728,7 +728,7 @@ export async function seedDatabase() {
       program: foundationProgram._id,
       parentName: 'Vikram Patel',
       parentPhone: '+91 98290 88777',
-      attendanceRate: 98,
+      attendanceRate: 0,
       avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&q=80&w=200',
     },
     {
@@ -742,7 +742,7 @@ export async function seedDatabase() {
       program: foundationProgram._id,
       parentName: 'Rajesh Mehra',
       parentPhone: '+91 98290 88778',
-      attendanceRate: 88,
+      attendanceRate: 0,
       avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=200',
     },
     {
@@ -756,7 +756,7 @@ export async function seedDatabase() {
       program: foundationProgram._id,
       parentName: 'Manoj Verma',
       parentPhone: '+91 98290 88779',
-      attendanceRate: 91,
+      attendanceRate: 0,
       avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=200',
     },
     {
@@ -770,7 +770,7 @@ export async function seedDatabase() {
       program: skillBuilderProgram._id,
       parentName: 'Alok Singhania',
       parentPhone: '+91 98290 88780',
-      attendanceRate: 96,
+      attendanceRate: 0,
       avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=200',
     },
     {
@@ -784,7 +784,7 @@ export async function seedDatabase() {
       program: skillBuilderProgram._id,
       parentName: 'Sunil Malhotra',
       parentPhone: '+91 98290 88781',
-      attendanceRate: 85,
+      attendanceRate: 0,
       avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=200',
     },
   ];
@@ -820,28 +820,8 @@ export async function seedDatabase() {
     createdStudents.push(student);
   }
 
-  // 8. Attendance Records
-  const today = new Date();
-  const pastDates = [
-    new Date(today.getTime() - 2 * 86400000),
-    new Date(today.getTime() - 4 * 86400000),
-    new Date(today.getTime() - 6 * 86400000),
-  ];
-
-  for (const date of pastDates) {
-    await Attendance.create({
-      school: abcSchool._id,
-      batch: batch1._id,
-      date,
-      teacher: teacherUser1._id,
-      topicCovered: 'Mastering AI Prompts & Visual Storytelling Concepts',
-      records: createdStudents.slice(0, 4).map((st, idx) => ({
-        student: st._id,
-        status: idx === 2 ? 'LATE' : 'PRESENT',
-        remark: idx === 2 ? 'Joined 5 mins late' : 'Active class participation',
-      })),
-    });
-  }
+  // 8. Attendance Records (Kept empty until real in-lab sessions are conducted by batch teachers)
+  // Real records will be created via teacher attendance logging.
 
   // 9. Assignments & Submissions
   const assignment1 = await Assignment.create({
